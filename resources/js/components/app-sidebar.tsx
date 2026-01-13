@@ -10,17 +10,57 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, manageUsers } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import {
+    BookOpen,
+    Calendar,
+    ChartArea,
+    Folder,
+    FolderRoot,
+    Handshake,
+    LayoutGrid,
+    Tickets,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Board',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Analytics',
+        href: '#',
+        icon: ChartArea,
+    },
+    {
+        title: 'Projects',
+        href: '#',
+        icon: FolderRoot,
+    },
+    {
+        title: 'Tikets',
+        href: '#',
+        icon: Tickets,
+    },
+    {
+        title: 'Timelines',
+        href: '#',
+        icon: Calendar,
+    },
+    {
+        title: 'Teams',
+        href: '#',
+        icon: Handshake,
+    },
+    {
+        title: 'Manage Users',
+        href: manageUsers(),
+        icon: Users,
     },
 ];
 
