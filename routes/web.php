@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -15,9 +16,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('manage-users', function () {
-        return Inertia::render('manage-users/index');
-    })->name('manage-users');
+    Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
+
+    Route::get('teams', function () {
+        return Inertia::render('teams/index');
+    })->name('teams');
 });
 
 require __DIR__.'/settings.php';

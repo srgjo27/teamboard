@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, manageUsers } from '@/routes';
+import { dashboard, manageUsers, teams } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -54,7 +54,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Teams',
-        href: '#',
+        href: teams(),
         icon: Handshake,
     },
     {
