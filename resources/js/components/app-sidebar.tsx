@@ -10,7 +10,14 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, manageUsers, teams } from '@/routes';
+import {
+    dashboard,
+    manageUsers,
+    projects,
+    teams,
+    tikets,
+    timelines,
+} from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -39,17 +46,17 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Projects',
-        href: '#',
+        href: projects(),
         icon: FolderRoot,
     },
     {
         title: 'Tikets',
-        href: '#',
+        href: tikets(),
         icon: Tickets,
     },
     {
         title: 'Timelines',
-        href: '#',
+        href: timelines(),
         icon: Calendar,
     },
     {

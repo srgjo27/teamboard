@@ -19,8 +19,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
 
     Route::get('teams', function () {
-        return Inertia::render('teams/index');
+        return Inertia::render('teams/page');
     })->name('teams');
+
+    Route::get('timelines', function () {
+        return Inertia::render('timelines/page');
+    })->name('timelines');
+
+    Route::get('tikets', function () {
+        return Inertia::render('tikets/page');
+    })->name('tikets');
+    
+    Route::get('projects', function () {
+        return Inertia::render('projects/page');
+    })->name('projects');
 });
 
 require __DIR__.'/settings.php';

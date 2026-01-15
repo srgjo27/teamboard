@@ -29,7 +29,7 @@ class UserController extends Controller
                 ];
             });
 
-        return Inertia::render('manage-users/index', [
+        return Inertia::render('manage-users/page', [
             'users' => $users
         ]);
     }
