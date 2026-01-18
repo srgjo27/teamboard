@@ -11,6 +11,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import {
+    analytics,
     dashboard,
     manageUsers,
     projects,
@@ -41,7 +42,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Analytics',
-        href: '#',
+        href: analytics(),
         icon: ChartArea,
     },
     {

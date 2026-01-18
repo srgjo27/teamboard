@@ -16,23 +16,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
+    Route::get('analytics', function () {
+        return Inertia::render('analytics/page');
+    })->name('analytics');
 
-    Route::get('teams', function () {
-        return Inertia::render('teams/page');
-    })->name('teams');
+    Route::get('projects', function () {
+        return Inertia::render('projects/page');
+    })->name('projects');
+
+    Route::get('tikets', function () {
+        return Inertia::render('tikets/page');
+    })->name('tikets');
 
     Route::get('timelines', function () {
         return Inertia::render('timelines/page');
     })->name('timelines');
 
-    Route::get('tikets', function () {
-        return Inertia::render('tikets/page');
-    })->name('tikets');
-    
-    Route::get('projects', function () {
-        return Inertia::render('projects/page');
-    })->name('projects');
+    Route::get('teams', function () {
+        return Inertia::render('teams/page');
+    })->name('teams');
+
+    Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
 });
 
 require __DIR__.'/settings.php';
