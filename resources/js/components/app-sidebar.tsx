@@ -20,7 +20,7 @@ import {
     timelines,
 } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
     Calendar,
@@ -86,6 +86,17 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props as any;
+    const userRole = auth?.user?.role?.name;
+
+    const filteredNavItems = mainNavItems.filter((item) => {
+        if (item.title === 'Manage Users') {
+            return userRole === 'admin';
+        }
+
+        return true;
+    });
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -101,7 +112,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

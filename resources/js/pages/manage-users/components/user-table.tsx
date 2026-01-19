@@ -1,0 +1,71 @@
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { User } from '@/types/user';
+import { Users } from 'lucide-react';
+import { UserTableRow } from './user-table-row';
+
+interface UserTableProps {
+    users: User[];
+}
+
+export function UserTable({ users }: UserTableProps) {
+    if (users.length === 0) {
+        return (
+            <div className="overflow-hidden rounded-lg border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[50px]">#</TableHead>
+                            <TableHead>User</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Joined</TableHead>
+                            <TableHead className="w-[80px]">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={6} className="h-32 text-center">
+                                <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                                    <Users className="h-10 w-10" />
+                                    <p>No users found</p>
+                                    <p className="text-xs">
+                                        Try adjusting your filters
+                                    </p>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        );
+    }
+
+    return (
+        <div className="overflow-hidden rounded-lg border">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[50px]">#</TableHead>
+                        <TableHead>User</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Joined</TableHead>
+                        <TableHead className="w-[80px]">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {users.map((user, index) => (
+                        <UserTableRow key={user.id} user={user} index={index} />
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
