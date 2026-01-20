@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,6 +26,7 @@ class UserController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role ? [
+                        'id' => $user->role->id,
                         'name' => $user->role->name,
                         'display_name' => $user->getRoleDisplayName(),
                     ] : null,
@@ -29,8 +34,77 @@ class UserController extends Controller
                 ];
             });
 
+        $roles = Role::all(['id', 'name', 'display_name']);
+
         return Inertia::render('manage-users/page', [
-            'users' => $users
+            'users' => $users,
+            'roles' => $roles
         ]);
+    }
+
+    /**
+     * Store a newly created user.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => $validated['role_id'],
+        ]);
+
+        return redirect()->back()->with('success', 'User created successfully.');
+    }
+
+    /**
+     * Update the user.
+     */
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        return redirect()->back()->with('success', 'User updated successfully.');
+    }
+
+    /**
+     * Update the user's role.
+     */
+    public function updateRole(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $user->update([
+            'role_id' => $validated['role_id']
+        ]);
+
+        return redirect()->back()->with('success', 'User role updated successfully.');
+    }
+
+    /**
+     * Delete the user.
+     */
+    public function destroy(User $user): RedirectResponse
+    {
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
 }

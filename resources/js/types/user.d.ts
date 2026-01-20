@@ -3,6 +3,7 @@ export interface User {
     name: string;
     email: string;
     role: {
+        id: number;
         name: string;
         display_name: string;
     } | null;

@@ -23,9 +23,18 @@ import { ROLE_COLORS } from '../constants';
 interface UserTableRowProps {
     user: User;
     index: number;
+    onEditUser: (user: User) => void;
+    onChangeRole: (user: User) => void;
+    onDeleteUser: (user: User) => void;
 }
 
-export function UserTableRow({ user, index }: UserTableRowProps) {
+export function UserTableRow({
+    user,
+    index,
+    onEditUser,
+    onChangeRole,
+    onDeleteUser,
+}: UserTableRowProps) {
     const getInitials = (name: string) => {
         return name
             .split(' ')
@@ -81,22 +90,19 @@ export function UserTableRow({ user, index }: UserTableRowProps) {
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEditUser(user)}>
                             <IconEdit className="mr-2 h-4 w-4" />
                             Edit User
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onChangeRole(user)}>
                             <IconShield className="mr-2 h-4 w-4" />
                             Change Role
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <IconMail className="mr-2 h-4 w-4" />
-                            Send Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             variant="destructive"
                             className="text-destructive"
+                            onClick={() => onDeleteUser(user)}
                         >
                             <IconTrash className="mr-2 h-4 w-4" />
                             Delete

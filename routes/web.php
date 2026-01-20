@@ -36,7 +36,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('teams/page');
     })->name('teams');
 
-    Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');
+        Route::post('manage-users', [UserController::class, 'store'])->name('manage-users.store');
+        Route::put('manage-users/{user}', [UserController::class, 'update'])->name('manage-users.update');
+        Route::put('manage-users/{user}/role', [UserController::class, 'updateRole'])->name('manage-users.update-role');
+        Route::delete('manage-users/{user}', [UserController::class, 'destroy'])->name('manage-users.destroy');
+    });
 });
 
 require __DIR__.'/settings.php';

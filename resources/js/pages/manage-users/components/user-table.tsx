@@ -12,9 +12,17 @@ import { UserTableRow } from './user-table-row';
 
 interface UserTableProps {
     users: User[];
+    onEditUser: (user: User) => void;
+    onChangeRole: (user: User) => void;
+    onDeleteUser: (user: User) => void;
 }
 
-export function UserTable({ users }: UserTableProps) {
+export function UserTable({
+    users,
+    onEditUser,
+    onChangeRole,
+    onDeleteUser,
+}: UserTableProps) {
     if (users.length === 0) {
         return (
             <div className="overflow-hidden rounded-lg border">
@@ -62,7 +70,14 @@ export function UserTable({ users }: UserTableProps) {
                 </TableHeader>
                 <TableBody>
                     {users.map((user, index) => (
-                        <UserTableRow key={user.id} user={user} index={index} />
+                        <UserTableRow
+                            key={user.id}
+                            user={user}
+                            index={index}
+                            onEditUser={onEditUser}
+                            onChangeRole={onChangeRole}
+                            onDeleteUser={onDeleteUser}
+                        />
                     ))}
                 </TableBody>
             </Table>
