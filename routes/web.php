@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,9 +33,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('timelines/page');
     })->name('timelines');
 
-    Route::get('teams', function () {
-        return Inertia::render('teams/page');
-    })->name('teams');
+    Route::get('teams', [TeamController::class, 'index'])->name('teams');
+    Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.add-member');
 
     Route::middleware(['role:admin'])->group(function () {
         Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');

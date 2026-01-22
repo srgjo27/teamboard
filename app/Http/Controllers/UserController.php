@@ -101,8 +101,12 @@ class UserController extends Controller
     /**
      * Delete the user.
      */
-    public function destroy(User $user): RedirectResponse
+    public function destroy(Request $request, User $user): RedirectResponse
     {
+        if ($request->user()->id === $user->id) {
+            return redirect()->back()->with('error', 'You cannot delete your own account.');
+        }
+
         $user->delete();
 
         return redirect()->back()->with('success', 'User deleted successfully.');

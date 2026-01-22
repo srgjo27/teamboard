@@ -23,6 +23,7 @@ import { ROLE_COLORS } from '../constants';
 interface UserTableRowProps {
     user: User;
     index: number;
+    currentUserId?: number;
     onEditUser: (user: User) => void;
     onChangeRole: (user: User) => void;
     onDeleteUser: (user: User) => void;
@@ -31,6 +32,7 @@ interface UserTableRowProps {
 export function UserTableRow({
     user,
     index,
+    currentUserId,
     onEditUser,
     onChangeRole,
     onDeleteUser,
@@ -41,6 +43,8 @@ export function UserTableRow({
             .map((n) => n[0])
             .join('');
     };
+
+    const isCurrentUser = currentUserId === user.id;
 
     return (
         <TableRow>
@@ -103,9 +107,10 @@ export function UserTableRow({
                             variant="destructive"
                             className="text-destructive"
                             onClick={() => onDeleteUser(user)}
+                            disabled={isCurrentUser}
                         >
                             <IconTrash className="mr-2 h-4 w-4" />
-                            Delete
+                            {isCurrentUser ? 'Cannot Delete Self' : 'Delete'}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

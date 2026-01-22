@@ -8,7 +8,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { User } from '@/types/user';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { AddUserDialog } from './components/add-user-dialog';
 import { ChangeRoleDialog } from './components/change-role-dialog';
@@ -34,6 +34,9 @@ interface ManageUsersProps {
 }
 
 export default function ManageUsers({ users, roles }: ManageUsersProps) {
+    const { auth } = usePage().props as any;
+    const currentUserId = auth?.user?.id;
+
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [addUserOpen, setAddUserOpen] = useState(false);
     const [changeRoleOpen, setChangeRoleOpen] = useState(false);
@@ -106,6 +109,7 @@ export default function ManageUsers({ users, roles }: ManageUsersProps) {
                     <CardContent>
                         <UserTable
                             users={filteredUsers}
+                            currentUserId={currentUserId}
                             onEditUser={handleEditUser}
                             onChangeRole={handleChangeRole}
                             onDeleteUser={handleDeleteUser}

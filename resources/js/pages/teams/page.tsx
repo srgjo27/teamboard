@@ -14,14 +14,6 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -29,25 +21,25 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Team } from '@/types/team';
+import { User } from '@/types/user';
+import { Head, usePage } from '@inertiajs/react';
 import {
     IconChevronDown,
     IconChevronUp,
     IconDotsVertical,
     IconEdit,
-    IconPlus,
     IconSettings,
     IconTrash,
     IconUserPlus,
-    IconUsers,
 } from '@tabler/icons-react';
-import { TrendingUp, UserCheck, Users } from 'lucide-react';
+import { UserCheck, Users } from 'lucide-react';
 import { useState } from 'react';
+import AddMemberDialog from './components/add-member-dialog';
+import CreateTeamDialog from './components/create-team-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -56,84 +48,16 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const mockTeams = [
-    {
-        id: 1,
-        name: 'Team Alpha',
-        description: 'Main Web Application Development',
-        status: 'active',
-        members: [
-            { name: 'Alice Johnson', role: 'Project Manager' },
-            { name: 'Bob Smith', role: 'Quality Assurance' },
-            { name: 'Charlie Brown', role: 'Quality Assurance' },
-            { name: 'David Wilson', role: 'Front End Developer' },
-            { name: 'Emma Davis', role: 'Back End Developer' },
-            { name: 'Frank Miller', role: 'Designer' },
-        ],
-        activeProjects: 3,
-    },
-    {
-        id: 2,
-        name: 'Team Beta',
-        description: 'Mobile Applications & Cross Platform',
-        status: 'active',
-        members: [
-            { name: 'Grace Lee', role: 'Scrum Master' },
-            { name: 'Henry Wang', role: 'Full Stack Developer' },
-            { name: 'Isabel Chen', role: 'Full Stack Developer' },
-            { name: 'Jack Taylor', role: 'Designer' },
-        ],
-        activeProjects: 2,
-    },
-    {
-        id: 3,
-        name: 'Team Gamma',
-        description: 'API Development & Microservices',
-        status: 'active',
-        members: [
-            { name: 'Kate Brown', role: 'Product Owner' },
-            { name: 'Liam Green', role: 'Back End Developer' },
-            { name: 'Mia White', role: 'Back End Developer' },
-            { name: 'Noah Black', role: 'Quality Assurance' },
-        ],
-        activeProjects: 1,
-    },
-    {
-        id: 4,
-        name: 'Team Delta',
-        description: 'DevOps & Infrastructure Management',
-        status: 'active',
-        members: [
-            { name: 'Olivia Harris', role: 'Project Manager' },
-            { name: 'Paul Clark', role: 'Full Stack Developer' },
-            { name: 'Quinn Lewis', role: 'Front End Developer' },
-            { name: 'Ryan Walker', role: 'Back End Developer' },
-            { name: 'Sophia Hall', role: 'Quality Assurance' },
-        ],
-        activeProjects: 4,
-    },
-];
+interface TeamsProps {
+    teams: Team[];
+    allUsers: User[];
+}
 
-const roleColors: Record<string, string> = {
-    'Project Manager': 'bg-purple-500',
-    'Scrum Master': 'bg-blue-500',
-    'Product Owner': 'bg-indigo-500',
-    'Front End Developer': 'bg-green-500',
-    'Back End Developer': 'bg-teal-500',
-    'Full Stack Developer': 'bg-cyan-500',
-    'Quality Assurance': 'bg-orange-500',
-    Designer: 'bg-pink-500',
-};
-
-function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
+function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const roleCount = team.members.reduce(
-        (acc, member) => {
-            acc[member.role] = (acc[member.role] || 0) + 1;
-            return acc;
-        },
-        {} as Record<string, number>,
+    const availableUsers = allUsers.filter(
+        (user) => !team.members.some((member) => member.id === user.id),
     );
 
     return (
@@ -174,10 +98,18 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
                                 <IconEdit className="mr-2 h-4 w-4" />
                                 Edit Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <IconUserPlus className="mr-2 h-4 w-4" />
-                                Add Members
-                            </DropdownMenuItem>
+                            <AddMemberDialog
+                                teamId={team.id}
+                                availableUsers={availableUsers}
+                                trigger={
+                                    <DropdownMenuItem
+                                        onSelect={(e) => e.preventDefault()}
+                                    >
+                                        <IconUserPlus className="mr-2 h-4 w-4" />
+                                        Add Members
+                                    </DropdownMenuItem>
+                                }
+                            />
                             <DropdownMenuItem>
                                 <IconSettings className="mr-2 h-4 w-4" />
                                 Team Settings
@@ -196,51 +128,22 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
             </CardHeader>
 
             <CardContent className="p-4">
-                <div className="mb-4 grid grid-cols-3 gap-4 text-center">
+                <div className="mb-4 grid grid-cols-2 gap-4 text-center">
                     <div className="rounded-lg bg-muted/50 p-3">
                         <div className="text-2xl font-bold">
-                            {team.members.length}
+                            {team.members_count}
                         </div>
                         <div className="text-xs text-muted-foreground">
                             Members
                         </div>
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
-                        <div className="text-2xl font-bold">
-                            {Object.keys(roleCount).length}
-                        </div>
                         <div className="text-xs text-muted-foreground">
-                            Roles
+                            Created by
                         </div>
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
-                        <div className="text-2xl font-bold">
-                            {team.activeProjects}
+                        <div className="text-sm font-medium">
+                            {team.creator.name}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                            Projects
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <div className="mb-2 text-sm font-medium">
-                        Team Composition
-                    </div>
-                    <div className="space-y-2">
-                        {Object.entries(roleCount).map(([role, count]) => (
-                            <div key={role} className="flex items-center gap-2">
-                                <div
-                                    className={`h-2 w-2 rounded-full ${roleColors[role]}`}
-                                />
-                                <span className="flex-1 text-sm text-muted-foreground">
-                                    {role}
-                                </span>
-                                <Badge variant="secondary" className="text-xs">
-                                    {count}
-                                </Badge>
-                            </div>
-                        ))}
                     </div>
                 </div>
 
@@ -267,9 +170,9 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
 
                     {!isOpen && (
                         <div className="mt-3 flex -space-x-3">
-                            {team.members.slice(0, 5).map((member, index) => (
+                            {team.members.slice(0, 5).map((member) => (
                                 <Avatar
-                                    key={index}
+                                    key={member.id}
                                     className="h-10 w-10 border-2 border-background"
                                 >
                                     <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
@@ -280,18 +183,18 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
                                     </AvatarFallback>
                                 </Avatar>
                             ))}
-                            {team.members.length > 5 && (
+                            {team.members_count > 5 && (
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-muted text-xs font-semibold">
-                                    +{team.members.length - 5}
+                                    +{team.members_count - 5}
                                 </div>
                             )}
                         </div>
                     )}
 
                     <CollapsibleContent className="mt-3 space-y-2">
-                        {team.members.map((member, index) => (
+                        {team.members.map((member) => (
                             <div
-                                key={index}
+                                key={member.id}
                                 className="flex items-center gap-3 rounded-lg border p-2 transition-colors hover:bg-muted/50"
                             >
                                 <Avatar className="h-9 w-9">
@@ -307,7 +210,7 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
                                         {member.name}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                        {member.role}
+                                        {member.email}
                                     </div>
                                 </div>
                             </div>
@@ -315,30 +218,30 @@ function TeamCard({ team }: { team: (typeof mockTeams)[0] }) {
                     </CollapsibleContent>
                 </Collapsible>
 
-                <div className="mt-4 flex gap-2">
-                    <Button variant="outline" className="flex-1" size="sm">
-                        <IconUsers className="mr-2 h-4 w-4" />
-                        Manage
-                    </Button>
-                    <Button variant="outline" size="sm">
-                        <IconUserPlus className="h-4 w-4" />
-                    </Button>
+                <div className="mt-4">
+                    <AddMemberDialog
+                        teamId={team.id}
+                        availableUsers={availableUsers}
+                    />
                 </div>
             </CardContent>
         </Card>
     );
 }
 
-export default function Teams() {
-    const totalMembers = mockTeams.reduce(
-        (sum, team) => sum + team.members.length,
+export default function Teams({ teams, allUsers }: TeamsProps) {
+    const { auth } = usePage().props as any;
+    const totalMembers = teams.reduce(
+        (sum, team) => sum + team.members_count,
         0,
     );
-    const totalTeams = mockTeams.length;
-    const totalProjects = mockTeams.reduce(
-        (sum, team) => sum + team.activeProjects,
-        0,
-    );
+    const totalTeams = teams.length;
+
+    const canCreateTeam =
+        auth?.user?.role?.name === 'product_owner' ||
+        auth?.user?.role?.name === 'scrum_master' ||
+        auth?.user?.role?.name === 'project_manager' ||
+        auth?.user?.role?.name === 'admin';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -355,48 +258,11 @@ export default function Teams() {
                         </p>
                     </div>
 
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button>
-                                <IconPlus className="mr-2 h-4 w-4" />
-                                Create Team
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Create New Team</DialogTitle>
-                                <DialogDescription>
-                                    Set up a new team for your projects
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="team-name">Team Name</Label>
-                                    <Input
-                                        id="team-name"
-                                        placeholder="e.g., Team Alpha"
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="team-description">
-                                        Description
-                                    </Label>
-                                    <Input
-                                        id="team-description"
-                                        placeholder="What does this team do?"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <Button variant="outline">Cancel</Button>
-                                <Button>Create Team</Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    {canCreateTeam && <CreateTeamDialog />}
                 </div>
 
                 {/* Stats Cards */}
-                <div className="mb-6 grid gap-4 md:grid-cols-3">
+                <div className="mb-6 grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">
@@ -430,28 +296,15 @@ export default function Teams() {
                             </p>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Active Projects
-                            </CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {totalProjects}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                Currently in progress
-                            </p>
-                        </CardContent>
-                    </Card>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {mockTeams.map((team) => (
-                        <TeamCard key={team.id} team={team} />
+                    {teams.map((team) => (
+                        <TeamCard
+                            key={team.id}
+                            team={team}
+                            allUsers={allUsers}
+                        />
                     ))}
                 </div>
             </div>

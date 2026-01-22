@@ -61,35 +61,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has a specific role.
-     */
-    public function hasRole(string $roleName): bool
-    {
-        return $this->role?->name === $roleName;
-    }
-
-    /**
-     * Check if user has any of the given roles.
-     */
-    public function hasAnyRole(array $roles): bool
-    {
-        return in_array($this->role?->name, $roles);
-    }
-
-    /**
-     * Assign a role to the user.
-     */
-    public function assignRole(string|Role $role): void
-    {
-        if (is_string($role)) {
-            $role = Role::where('name', $role)->firstOrFail();
-        }
-        
-        $this->role_id = $role->id;
-        $this->save();
-    }
-
-    /**
      * Get role display name.
      */
     public function getRoleDisplayName(): ?string

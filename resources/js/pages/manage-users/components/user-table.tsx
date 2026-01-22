@@ -12,6 +12,7 @@ import { UserTableRow } from './user-table-row';
 
 interface UserTableProps {
     users: User[];
+    currentUserId?: number;
     onEditUser: (user: User) => void;
     onChangeRole: (user: User) => void;
     onDeleteUser: (user: User) => void;
@@ -19,6 +20,7 @@ interface UserTableProps {
 
 export function UserTable({
     users,
+    currentUserId,
     onEditUser,
     onChangeRole,
     onDeleteUser,
@@ -74,6 +76,7 @@ export function UserTable({
                             key={user.id}
                             user={user}
                             index={index}
+                            currentUserId={currentUserId}
                             onEditUser={onEditUser}
                             onChangeRole={onChangeRole}
                             onDeleteUser={onDeleteUser}
