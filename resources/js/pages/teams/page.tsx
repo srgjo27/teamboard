@@ -32,14 +32,14 @@ import {
     IconChevronUp,
     IconDotsVertical,
     IconEdit,
-    IconSettings,
     IconTrash,
-    IconUserPlus,
 } from '@tabler/icons-react';
 import { UserCheck, Users } from 'lucide-react';
 import { useState } from 'react';
 import AddMemberDialog from './components/add-member-dialog';
 import CreateTeamDialog from './components/create-team-dialog';
+import EditTeamDialog from './components/edit-team-dialog';
+import RemoveMemberDialog from './components/remove-member-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -53,7 +53,15 @@ interface TeamsProps {
     allUsers: User[];
 }
 
-function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
+function TeamCard({
+    team,
+    allUsers,
+    canCreateTeam,
+}: {
+    team: Team;
+    allUsers: User[];
+    canCreateTeam: boolean;
+}) {
     const [isOpen, setIsOpen] = useState(false);
 
     const availableUsers = allUsers.filter(
@@ -81,49 +89,44 @@ function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
                         </CardDescription>
                     </div>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                            >
-                                <IconDotsVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Team Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <IconEdit className="mr-2 h-4 w-4" />
-                                Edit Details
-                            </DropdownMenuItem>
-                            <AddMemberDialog
-                                teamId={team.id}
-                                availableUsers={availableUsers}
-                                trigger={
-                                    <DropdownMenuItem
-                                        onSelect={(e) => e.preventDefault()}
-                                    >
-                                        <IconUserPlus className="mr-2 h-4 w-4" />
-                                        Add Members
-                                    </DropdownMenuItem>
-                                }
-                            />
-                            <DropdownMenuItem>
-                                <IconSettings className="mr-2 h-4 w-4" />
-                                Team Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                variant="destructive"
-                                className="text-destructive"
-                            >
-                                <IconTrash className="mr-2 h-4 w-4" />
-                                Delete Team
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    {canCreateTeam && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                >
+                                    <IconDotsVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>
+                                    Team Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <EditTeamDialog
+                                    team={team}
+                                    trigger={
+                                        <DropdownMenuItem
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <IconEdit className="mr-2 h-4 w-4" />
+                                            Edit Details
+                                        </DropdownMenuItem>
+                                    }
+                                />
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    className="text-destructive"
+                                >
+                                    <IconTrash className="mr-2 h-4 w-4" />
+                                    Delete Team
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </CardHeader>
 
@@ -139,10 +142,10 @@ function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
                     </div>
                     <div className="rounded-lg bg-muted/50 p-3">
                         <div className="text-xs text-muted-foreground">
-                            Created by
+                            Product Manager
                         </div>
                         <div className="text-sm font-medium">
-                            {team.creator.name}
+                            {team.product_manager?.name || 'Not assigned'}
                         </div>
                     </div>
                 </div>
@@ -175,7 +178,13 @@ function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
                                     key={member.id}
                                     className="h-10 w-10 border-2 border-background"
                                 >
-                                    <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                                    <AvatarFallback
+                                        className="text-xs font-semibold"
+                                        style={{
+                                            backgroundColor: `${team.color}20`,
+                                            color: team.color,
+                                        }}
+                                    >
                                         {member.name
                                             .split(' ')
                                             .map((n) => n[0])
@@ -184,7 +193,13 @@ function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
                                 </Avatar>
                             ))}
                             {team.members_count > 5 && (
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background bg-muted text-xs font-semibold">
+                                <div
+                                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background text-xs font-semibold"
+                                    style={{
+                                        backgroundColor: `${team.color}20`,
+                                        color: team.color,
+                                    }}
+                                >
                                     +{team.members_count - 5}
                                 </div>
                             )}
@@ -209,20 +224,28 @@ function TeamCard({ team, allUsers }: { team: Team; allUsers: User[] }) {
                                     <div className="text-sm font-medium">
                                         {member.name}
                                     </div>
+                                    <div className="text-xs">{member.role}</div>
                                     <div className="text-xs text-muted-foreground">
                                         {member.email}
                                     </div>
                                 </div>
+                                <RemoveMemberDialog
+                                    teamId={team.id}
+                                    userId={member.id}
+                                    userName={member.name}
+                                />
                             </div>
                         ))}
                     </CollapsibleContent>
                 </Collapsible>
 
                 <div className="mt-4">
-                    <AddMemberDialog
-                        teamId={team.id}
-                        availableUsers={availableUsers}
-                    />
+                    {canCreateTeam && (
+                        <AddMemberDialog
+                            teamId={team.id}
+                            availableUsers={availableUsers}
+                        />
+                    )}
                 </div>
             </CardContent>
         </Card>
@@ -238,9 +261,9 @@ export default function Teams({ teams, allUsers }: TeamsProps) {
     const totalTeams = teams.length;
 
     const canCreateTeam =
+        auth?.user?.role?.name === 'product_manager' ||
         auth?.user?.role?.name === 'product_owner' ||
         auth?.user?.role?.name === 'scrum_master' ||
-        auth?.user?.role?.name === 'project_manager' ||
         auth?.user?.role?.name === 'admin';
 
     return (
@@ -304,6 +327,7 @@ export default function Teams({ teams, allUsers }: TeamsProps) {
                             key={team.id}
                             team={team}
                             allUsers={allUsers}
+                            canCreateTeam={canCreateTeam}
                         />
                     ))}
                 </div>

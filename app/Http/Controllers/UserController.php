@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,12 +16,15 @@ class UserController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $perPage = $request->get('per_page', 10);
+        
         $users = User::with('role')
+            ->select('id', 'name', 'email', 'role_id', 'created_at')
             ->latest()
-            ->get()
-            ->map(function ($user) {
+            ->paginate($perPage)
+            ->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -34,7 +38,9 @@ class UserController extends Controller
                 ];
             });
 
-        $roles = Role::all(['id', 'name', 'display_name']);
+        $roles = Cache::remember('roles.all', 3600, function () {
+            return Role::all(['id', 'name', 'display_name']);
+        });
 
         return Inertia::render('manage-users/page', [
             'users' => $users,
@@ -94,6 +100,7 @@ class UserController extends Controller
         $user->update([
             'role_id' => $validated['role_id']
         ]);
+
 
         return redirect()->back()->with('success', 'User role updated successfully.');
     }

@@ -1,10 +1,4 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { User } from '@/types/user';
@@ -15,6 +9,7 @@ import { ChangeRoleDialog } from './components/change-role-dialog';
 import { DeleteUserDialog } from './components/delete-user-dialog';
 import { EditUserDialog } from './components/edit-user-dialog';
 import { PageHeader } from './components/page-header';
+import { Pagination } from './components/pagination';
 import { UserFilters } from './components/user-filters';
 import { UserStatsCards } from './components/user-stats-cards';
 import { UserTable } from './components/user-table';
@@ -28,8 +23,19 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface PaginatedUsers {
+    data: User[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+    links: Array<{ url: string | null; label: string; active: boolean }>;
+}
+
 interface ManageUsersProps {
-    users: User[];
+    users: PaginatedUsers;
     roles: Array<{ id: number; name: string; display_name: string }>;
 }
 
@@ -50,9 +56,9 @@ export default function ManageUsers({ users, roles }: ManageUsersProps) {
         setSelectedRole,
         filteredUsers,
         uniqueRoles,
-    } = useUserFilters(users);
+    } = useUserFilters(users.data);
 
-    const stats = useUserStats(users, uniqueRoles);
+    const stats = useUserStats(users.data, uniqueRoles);
 
     const handleAddUser = () => {
         setAddUserOpen(true);
@@ -89,10 +95,6 @@ export default function ManageUsers({ users, roles }: ManageUsersProps) {
                                 <CardTitle className="text-base">
                                     User Directory
                                 </CardTitle>
-                                <CardDescription>
-                                    {filteredUsers.length} of {users.length}{' '}
-                                    users
-                                </CardDescription>
                             </div>
 
                             <UserFilters
@@ -101,7 +103,7 @@ export default function ManageUsers({ users, roles }: ManageUsersProps) {
                                 selectedRole={selectedRole}
                                 onRoleChange={setSelectedRole}
                                 uniqueRoles={uniqueRoles}
-                                users={users}
+                                users={users.data}
                             />
                         </div>
                     </CardHeader>
@@ -114,6 +116,10 @@ export default function ManageUsers({ users, roles }: ManageUsersProps) {
                             onChangeRole={handleChangeRole}
                             onDeleteUser={handleDeleteUser}
                         />
+
+                        <div className="mt-4">
+                            <Pagination pagination={users} />
+                        </div>
                     </CardContent>
                 </Card>
 

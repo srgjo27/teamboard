@@ -17,12 +17,18 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Team } from '@/types/team';
 import { User } from '@/types/user';
 import { useForm, usePage } from '@inertiajs/react';
-import { IconPlus } from '@tabler/icons-react';
-import { FormEventHandler, useState } from 'react';
+import { IconEdit } from '@tabler/icons-react';
+import { FormEventHandler, ReactNode, useState } from 'react';
 
-export default function CreateTeamDialog() {
+interface EditTeamDialogProps {
+    team: Team;
+    trigger?: ReactNode;
+}
+
+export default function EditTeamDialog({ team, trigger }: EditTeamDialogProps) {
     const [open, setOpen] = useState(false);
     const { allUsers } = usePage<{ allUsers: User[] }>().props;
 
@@ -30,19 +36,18 @@ export default function CreateTeamDialog() {
         (user) => user.role?.name === 'product_manager',
     );
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        description: '',
-        color: '#3B82F6',
-        product_manager_id: '',
+    const { data, setData, put, processing, errors, reset } = useForm({
+        name: team.name,
+        description: team.description || '',
+        color: team.color,
+        product_manager_id: team.product_manager?.id?.toString() || '',
     });
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        post('/teams', {
+        put(`/teams/${team.id}`, {
             preserveScroll: true,
             onSuccess: () => {
-                reset();
                 setOpen(false);
             },
         });
@@ -51,27 +56,31 @@ export default function CreateTeamDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>
-                    <IconPlus className="mr-2 h-4 w-4" />
-                    Create Team
-                </Button>
+                {trigger ? (
+                    trigger
+                ) : (
+                    <Button variant="outline" size="sm">
+                        <IconEdit className="mr-2 h-4 w-4" />
+                        Edit Team
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create New Team</DialogTitle>
+                    <DialogTitle>Edit Team</DialogTitle>
                     <DialogDescription>
-                        Set up a new team for your projects
+                        Update team information
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="team-name">
+                            <Label htmlFor="edit-team-name">
                                 Team Name{' '}
                                 <span className="text-destructive">*</span>
                             </Label>
                             <Input
-                                id="team-name"
+                                id="edit-team-name"
                                 placeholder="e.g., Team Alpha"
                                 value={data.name}
                                 onChange={(e) =>
@@ -88,11 +97,11 @@ export default function CreateTeamDialog() {
                             )}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="team-description">
+                            <Label htmlFor="edit-team-description">
                                 Description
                             </Label>
                             <Textarea
-                                id="team-description"
+                                id="edit-team-description"
                                 placeholder="What does this team do?"
                                 value={data.description}
                                 onChange={(e) =>
@@ -112,7 +121,7 @@ export default function CreateTeamDialog() {
                             )}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="product-manager">
+                            <Label htmlFor="edit-product-manager">
                                 Product Manager{' '}
                                 <span className="text-destructive">*</span>
                             </Label>
@@ -156,10 +165,10 @@ export default function CreateTeamDialog() {
                             )}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="team-color">Team Color</Label>
+                            <Label htmlFor="edit-team-color">Team Color</Label>
                             <div className="flex gap-2">
                                 <Input
-                                    id="team-color"
+                                    id="edit-team-color"
                                     type="color"
                                     value={data.color}
                                     onChange={(e) =>
@@ -188,13 +197,16 @@ export default function CreateTeamDialog() {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setOpen(false)}
+                            onClick={() => {
+                                reset();
+                                setOpen(false);
+                            }}
                             disabled={processing}
                         >
                             Cancel
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Creating...' : 'Create Team'}
+                            {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>

@@ -2,6 +2,7 @@ interface TeamMember {
     id: number;
     name: string;
     email: string;
+    role?: string;
 }
 
 export interface Team {
@@ -10,11 +11,11 @@ export interface Team {
     description: string;
     color: string;
     members_count: number;
-    creator: {
+    creator: string;
+    product_manager: {
         id: number;
         name: string;
-        email: string;
-    };
+    } | null;
     members: TeamMember[];
     created_at: string;
 }

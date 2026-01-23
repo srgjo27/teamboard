@@ -21,6 +21,7 @@ class Team extends Model
         'description',
         'color',
         'created_by',
+        'product_manager_id',
     ];
 
     /**
@@ -29,6 +30,14 @@ class Team extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the product manager of this team.
+     */
+    public function productManager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'product_manager_id');
     }
 
     /**

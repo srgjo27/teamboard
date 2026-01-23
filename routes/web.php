@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -21,9 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('analytics/page');
     })->name('analytics');
 
-    Route::get('projects', function () {
-        return Inertia::render('projects/page');
-    })->name('projects');
+    Route::get('projects', [ProjectController::class, 'index'])->name('projects');
+    Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
 
     Route::get('tikets', function () {
         return Inertia::render('tikets/page');
@@ -35,7 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('teams', [TeamController::class, 'index'])->name('teams');
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.add-member');
+    Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.remove-member');
 
     Route::middleware(['role:admin'])->group(function () {
         Route::get('manage-users', [UserController::class, 'index'])->name('manage-users');

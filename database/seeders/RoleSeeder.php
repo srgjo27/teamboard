@@ -28,8 +28,8 @@ class RoleSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'project_manager',
-                'display_name' => 'Project Manager',
+                'name' => 'product_manager',
+                'display_name' => 'Product Manager',
                 'description' => 'Manages project execution and team coordination',
                 'created_at' => now(),
                 'updated_at' => now(),
