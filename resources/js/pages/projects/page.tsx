@@ -10,6 +10,7 @@ import { ProjectCard } from './components/project-card';
 import { ProjectFilters } from './components/project-filters';
 import { ProjectStats } from './components/project-stats';
 import { ProjectStatusLegend } from './components/project-status-legend';
+import { ViewProjectDialog } from './components/view-project-dialog';
 import { useProjectFilters, useProjectStats } from './hooks/use-project-data';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -24,6 +25,7 @@ export default function ProjectsPage({ projects, teams }: ProjectsProps) {
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project | null>(
         null,
     );
@@ -50,6 +52,11 @@ export default function ProjectsPage({ projects, teams }: ProjectsProps) {
     const handleEditClick = (project: Project) => {
         setSelectedProject(project);
         setEditDialogOpen(true);
+    };
+
+    const handleViewClick = (project: Project) => {
+        setSelectedProject(project);
+        setViewDialogOpen(true);
     };
 
     return (
@@ -90,6 +97,7 @@ export default function ProjectsPage({ projects, teams }: ProjectsProps) {
                                 project={project}
                                 canActions={canCreateProject}
                                 onEdit={handleEditClick}
+                                onView={handleViewClick}
                             />
                         ))}
                     </div>
@@ -121,6 +129,13 @@ export default function ProjectsPage({ projects, teams }: ProjectsProps) {
                         teams={teams}
                     />
                 )}
+
+                {/* View Project Dialog */}
+                <ViewProjectDialog
+                    open={viewDialogOpen}
+                    onOpenChange={setViewDialogOpen}
+                    project={selectedProject}
+                />
             </div>
         </AppLayout>
     );

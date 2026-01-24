@@ -19,7 +19,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Team } from '@/types/project';
 import { User } from '@/types/user';
 import { useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { IconFile } from '@tabler/icons-react';
+import { FormEventHandler, useState } from 'react';
 
 interface CreateProjectDialogProps {
     open: boolean;
@@ -34,6 +35,9 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
     const { allUsers } = usePage<{ allUsers?: User[] }>().props;
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         description: '',
@@ -42,6 +46,8 @@ export function CreateProjectDialog({
         status: 'planning',
         start_date: '',
         end_date: '',
+        file: null as File | null,
+        image: null as File | null,
     });
 
     const projectManagers =
@@ -51,8 +57,11 @@ export function CreateProjectDialog({
         e.preventDefault();
         post('/projects', {
             preserveScroll: true,
+            forceFormData: true,
             onSuccess: () => {
                 reset();
+                setSelectedFile(null);
+                setSelectedImage(null);
                 onOpenChange(false);
             },
         });
@@ -289,6 +298,96 @@ export function CreateProjectDialog({
                                     </p>
                                 )}
                             </div>
+                        </div>
+
+                        {/* File Upload */}
+                        <div className="grid gap-2">
+                            <Label htmlFor="file">
+                                Document File (Optional)
+                            </Label>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    id="file"
+                                    type="file"
+                                    accept=".doc,.docx,.pdf"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setSelectedFile(file);
+                                            setData('file', file);
+                                        }
+                                    }}
+                                    className={
+                                        errors.file ? 'border-destructive' : ''
+                                    }
+                                />
+                            </div>
+                            {selectedFile && (
+                                <div className="flex items-center gap-2 rounded-lg border p-2 text-sm">
+                                    <IconFile className="h-4 w-4" />
+                                    <span className="flex-1 truncate">
+                                        {selectedFile.name}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {(selectedFile.size / 1024).toFixed(1)}{' '}
+                                        KB
+                                    </span>
+                                </div>
+                            )}
+                            {errors.file && (
+                                <p className="text-sm text-destructive">
+                                    {errors.file}
+                                </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                                Allowed: .doc, .docx, .pdf (max 20MB)
+                            </p>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="grid gap-2">
+                            <Label htmlFor="image">
+                                Project Image (Optional)
+                            </Label>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    id="image"
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setSelectedImage(file);
+                                            setData('image', file);
+                                        }
+                                    }}
+                                    className={
+                                        errors.image ? 'border-destructive' : ''
+                                    }
+                                />
+                            </div>
+                            {selectedImage && (
+                                <div className="rounded-lg border p-2">
+                                    <img
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Preview"
+                                        className="h-32 w-full rounded object-cover"
+                                    />
+                                    <p className="mt-2 text-sm">
+                                        {selectedImage.name} -{' '}
+                                        {(selectedImage.size / 1024).toFixed(1)}{' '}
+                                        KB
+                                    </p>
+                                </div>
+                            )}
+                            {errors.image && (
+                                <p className="text-sm text-destructive">
+                                    {errors.image}
+                                </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                                Allowed: .jpg, .jpeg, .png (max 10MB)
+                            </p>
                         </div>
                     </div>
 

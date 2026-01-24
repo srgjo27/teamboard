@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Project extends Model
+class ProjectTimeline extends Model
 {
     use SoftDeletes;
 
@@ -17,18 +17,18 @@ class Project extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'project_id',
+        'type',
+        'phase',
+        'title',
         'description',
-        'team_id',
-        'project_manager_id',
-        'status',
         'start_date',
         'end_date',
+        'status',
+        'sprint_number',
+        'story_points',
+        'deliverables',
         'created_by',
-        'file_path',
-        'file_name',
-        'image_path',
-        'image_name',
     ];
 
     /**
@@ -39,38 +39,23 @@ class Project extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'deliverables' => 'array',
     ];
 
     /**
-     * Get the team that works on this project.
+     * Get the project that owns the timeline.
      */
-    public function team(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Project::class);
     }
 
     /**
-     * Get the project manager who leads this project.
-     */
-    public function projectManager(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'project_manager_id');
-    }
-
-    /**
-     * Get the user who created this project.
+     * Get the user who created this timeline.
      */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * Get the timelines for the project.
-     */
-    public function timelines(): HasMany
-    {
-        return $this->hasMany(ProjectTimeline::class);
     }
 
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,9 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('tikets/page');
     })->name('tikets');
 
-    Route::get('timelines', function () {
-        return Inertia::render('timelines/page');
-    })->name('timelines');
+    Route::get('timelines', [TimelineController::class, 'index'])->name('timelines');
+    Route::post('timelines', [TimelineController::class, 'store'])->name('timelines.store');
+    Route::put('timelines/{timeline}', [TimelineController::class, 'update'])->name('timelines.update');
+    Route::delete('timelines/{timeline}', [TimelineController::class, 'destroy'])->name('timelines.destroy');
 
     Route::get('teams', [TeamController::class, 'index'])->name('teams');
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');

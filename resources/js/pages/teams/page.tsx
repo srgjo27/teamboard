@@ -56,11 +56,11 @@ interface TeamsProps {
 function TeamCard({
     team,
     allUsers,
-    canCreateTeam,
+    canActions,
 }: {
     team: Team;
     allUsers: User[];
-    canCreateTeam: boolean;
+    canActions: boolean;
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -89,7 +89,7 @@ function TeamCard({
                         </CardDescription>
                     </div>
 
-                    {canCreateTeam && (
+                    {canActions && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -229,18 +229,21 @@ function TeamCard({
                                         {member.email}
                                     </div>
                                 </div>
-                                <RemoveMemberDialog
-                                    teamId={team.id}
-                                    userId={member.id}
-                                    userName={member.name}
-                                />
+
+                                {canActions && (
+                                    <RemoveMemberDialog
+                                        teamId={team.id}
+                                        userId={member.id}
+                                        userName={member.name}
+                                    />
+                                )}
                             </div>
                         ))}
                     </CollapsibleContent>
                 </Collapsible>
 
                 <div className="mt-4">
-                    {canCreateTeam && (
+                    {canActions && (
                         <AddMemberDialog
                             teamId={team.id}
                             availableUsers={availableUsers}
@@ -260,7 +263,7 @@ export default function Teams({ teams, allUsers }: TeamsProps) {
     );
     const totalTeams = teams.length;
 
-    const canCreateTeam =
+    const canActions =
         auth?.user?.role?.name === 'product_manager' ||
         auth?.user?.role?.name === 'product_owner' ||
         auth?.user?.role?.name === 'scrum_master' ||
@@ -281,7 +284,7 @@ export default function Teams({ teams, allUsers }: TeamsProps) {
                         </p>
                     </div>
 
-                    {canCreateTeam && <CreateTeamDialog />}
+                    {canActions && <CreateTeamDialog />}
                 </div>
 
                 {/* Stats Cards */}
@@ -327,7 +330,7 @@ export default function Teams({ teams, allUsers }: TeamsProps) {
                             key={team.id}
                             team={team}
                             allUsers={allUsers}
-                            canCreateTeam={canCreateTeam}
+                            canActions={canActions}
                         />
                     ))}
                 </div>

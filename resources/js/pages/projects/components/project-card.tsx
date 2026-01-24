@@ -32,12 +32,14 @@ interface ProjectCardProps {
     project: Project;
     canActions?: boolean;
     onEdit?: (project: Project) => void;
+    onView?: (project: Project) => void;
 }
 
 export function ProjectCard({
     project,
     canActions = false,
     onEdit,
+    onView,
 }: ProjectCardProps) {
     const statusConfig = statusColors[project.status];
 
@@ -52,43 +54,47 @@ export function ProjectCard({
                         {statusConfig.label}
                     </Badge>
 
-                    {canActions && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                                >
-                                    <IconDotsVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>
-                                    Project Actions
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <IconEye className="mr-2 h-4 w-4" />
-                                    View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onSelect={() => onEdit?.(project)}
-                                >
-                                    <IconEdit className="mr-2 h-4 w-4" />
-                                    Edit Project
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    variant="destructive"
-                                    className="text-destructive"
-                                >
-                                    <IconTrash className="mr-2 h-4 w-4" />
-                                    Delete Project
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                                <IconDotsVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>
+                                Project Actions
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onSelect={() => onView?.(project)}
+                            >
+                                <IconEye className="mr-2 h-4 w-4" />
+                                View Details
+                            </DropdownMenuItem>
+                            {canActions && (
+                                <div>
+                                    <DropdownMenuItem
+                                        onSelect={() => onEdit?.(project)}
+                                    >
+                                        <IconEdit className="mr-2 h-4 w-4" />
+                                        Edit Project
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        className="text-destructive"
+                                    >
+                                        <IconTrash className="mr-2 h-4 w-4" />
+                                        Delete Project
+                                    </DropdownMenuItem>
+                                </div>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <CardTitle className="text-lg">{project.name}</CardTitle>

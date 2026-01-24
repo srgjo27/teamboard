@@ -19,7 +19,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Project, Team } from '@/types/project';
 import { User } from '@/types/user';
 import { useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler, useEffect } from 'react';
+import { IconFile } from '@tabler/icons-react';
+import { FormEventHandler, useEffect, useState } from 'react';
 
 interface EditProjectDialogProps {
     open: boolean;
@@ -36,7 +37,10 @@ export function EditProjectDialog({
 }: EditProjectDialogProps) {
     const { allUsers } = usePage<{ allUsers?: User[] }>().props;
 
-    const { data, setData, put, processing, errors, reset } = useForm({
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         description: '',
         team_id: '',
@@ -44,6 +48,9 @@ export function EditProjectDialog({
         status: 'planning',
         start_date: '',
         end_date: '',
+        file: null as File | null,
+        image: null as File | null,
+        _method: 'PUT',
     });
 
     const projectManagers =
@@ -59,7 +66,12 @@ export function EditProjectDialog({
                 status: project.status,
                 start_date: project.start_date || '',
                 end_date: project.end_date || '',
+                file: null,
+                image: null,
+                _method: 'PUT',
             });
+            setSelectedFile(null);
+            setSelectedImage(null);
         }
     }, [project]);
 
@@ -67,9 +79,12 @@ export function EditProjectDialog({
         e.preventDefault();
         if (!project) return;
 
-        put(`/projects/${project.id}`, {
+        post(`/projects/${project.id}`, {
             preserveScroll: true,
+            forceFormData: true,
             onSuccess: () => {
+                setSelectedFile(null);
+                setSelectedImage(null);
                 onOpenChange(false);
             },
         });
@@ -310,6 +325,117 @@ export function EditProjectDialog({
                                     </p>
                                 )}
                             </div>
+                        </div>
+
+                        {/* File Upload */}
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-file">
+                                Document File (Optional)
+                            </Label>
+                            {project?.file_name && !selectedFile && (
+                                <div className="flex items-center justify-between rounded-lg border p-2 text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <IconFile className="h-4 w-4" />
+                                        <span className="flex-1 truncate">
+                                            {project.file_name}
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">
+                                        Current file
+                                    </span>
+                                </div>
+                            )}
+                            <Input
+                                id="edit-file"
+                                type="file"
+                                accept=".doc,.docx,.pdf"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setSelectedFile(file);
+                                        setData('file', file);
+                                    }
+                                }}
+                                className={
+                                    errors.file ? 'border-destructive' : ''
+                                }
+                            />
+                            {selectedFile && (
+                                <div className="flex items-center gap-2 rounded-lg border p-2 text-sm">
+                                    <IconFile className="h-4 w-4" />
+                                    <span className="flex-1 truncate">
+                                        {selectedFile.name}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {(selectedFile.size / 1024).toFixed(1)}{' '}
+                                        KB
+                                    </span>
+                                </div>
+                            )}
+                            {errors.file && (
+                                <p className="text-sm text-destructive">
+                                    {errors.file}
+                                </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                                Upload new file to replace existing (max 20MB)
+                            </p>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-image">
+                                Project Image (Optional)
+                            </Label>
+                            {project?.image_path && !selectedImage && (
+                                <div className="rounded-lg border p-2">
+                                    <img
+                                        src={`/storage/${project.image_path}`}
+                                        alt="Current project"
+                                        className="h-32 w-full rounded object-cover"
+                                    />
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        Current image
+                                    </p>
+                                </div>
+                            )}
+                            <Input
+                                id="edit-image"
+                                type="file"
+                                accept=".jpg,.jpeg,.png"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setSelectedImage(file);
+                                        setData('image', file);
+                                    }
+                                }}
+                                className={
+                                    errors.image ? 'border-destructive' : ''
+                                }
+                            />
+                            {selectedImage && (
+                                <div className="rounded-lg border p-2">
+                                    <img
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Preview"
+                                        className="h-32 w-full rounded object-cover"
+                                    />
+                                    <p className="mt-2 text-sm">
+                                        {selectedImage.name} -{' '}
+                                        {(selectedImage.size / 1024).toFixed(1)}{' '}
+                                        KB
+                                    </p>
+                                </div>
+                            )}
+                            {errors.image && (
+                                <p className="text-sm text-destructive">
+                                    {errors.image}
+                                </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                                Upload new image to replace existing (max 10MB)
+                            </p>
                         </div>
                     </div>
 

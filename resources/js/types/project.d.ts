@@ -18,6 +18,10 @@ export interface Project {
     };
     creator: string;
     created_at: string;
+    file_path: string | null;
+    file_name: string | null;
+    image_path: string | null;
+    image_name: string | null;
 }
 
 export interface Team {
