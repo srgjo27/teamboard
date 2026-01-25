@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -9,13 +8,14 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { IconFilter, IconSearch } from '@tabler/icons-react';
+import { TicketPageProps } from '@/types/ticket';
+import { Head, router } from '@inertiajs/react';
+import { IconSearch } from '@tabler/icons-react';
+import { useState } from 'react';
 import { CreateTicketDialog } from './components/create-ticket-dialog';
 import { KanbanColumn } from './components/kanban-column';
 import { TicketLegends } from './components/ticket-legends';
 import { TicketStats } from './components/ticket-stats';
-import { MOCK_TICKETS } from './constants/mock-tickets';
 import { TICKET_STATUSES } from './constants/ticket-statuses';
 import { useTicketFilter } from './hooks/use-ticket-filter';
 
@@ -26,15 +26,43 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function TiketsPage() {
-    const {
-        filteredTickets,
+export default function TiketsPage({
+    tickets,
+    projects,
+    timelines,
+}: TicketPageProps) {
+    const [selectedProject, setSelectedProject] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const { filteredTickets, stats } = useTicketFilter(
+        tickets,
         selectedProject,
-        setSelectedProject,
         searchQuery,
-        setSearchQuery,
-        stats,
-    } = useTicketFilter(MOCK_TICKETS);
+    );
+
+    const handleProjectChange = (value: string) => {
+        setSelectedProject(value);
+        if (value === 'all') {
+            router.get('/tikets', {}, { preserveState: true });
+        } else {
+            router.get(
+                '/tikets',
+                { project_id: value },
+                { preserveState: true },
+            );
+        }
+    };
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+        if (value) {
+            router.get(
+                '/tikets',
+                { search: value },
+                { preserveState: true, preserveScroll: true },
+            );
+        }
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -56,7 +84,7 @@ export default function TiketsPage() {
                         {/* Project Filter */}
                         <Select
                             value={selectedProject}
-                            onValueChange={setSelectedProject}
+                            onValueChange={handleProjectChange}
                         >
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Select project" />
@@ -65,12 +93,14 @@ export default function TiketsPage() {
                                 <SelectItem value="all">
                                     All Projects
                                 </SelectItem>
-                                <SelectItem value="alpha">
-                                    Project Alpha
-                                </SelectItem>
-                                <SelectItem value="beta">
-                                    Project Beta
-                                </SelectItem>
+                                {projects.map((project) => (
+                                    <SelectItem
+                                        key={project.id}
+                                        value={project.id.toString()}
+                                    >
+                                        {project.name}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
 
@@ -81,16 +111,16 @@ export default function TiketsPage() {
                                 placeholder="Search tickets..."
                                 className="w-[200px] pl-8"
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) =>
+                                    handleSearchChange(e.target.value)
+                                }
                             />
                         </div>
 
-                        <Button variant="outline">
-                            <IconFilter className="mr-2 h-4 w-4" />
-                            Filter
-                        </Button>
-
-                        <CreateTicketDialog />
+                        <CreateTicketDialog
+                            projects={projects}
+                            timelines={timelines}
+                        />
                     </div>
                 </div>
 

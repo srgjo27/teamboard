@@ -1,22 +1,29 @@
-import { useMemo, useState } from 'react';
-import { Ticket } from '../constants/mock-tickets';
+import { Ticket } from '@/types/ticket';
+import { useMemo } from 'react';
 
-export function useTicketFilter(tickets: Ticket[]) {
-    const [selectedProject, setSelectedProject] = useState<string>('all');
-    const [searchQuery, setSearchQuery] = useState('');
-
+export function useTicketFilter(
+    tickets: Ticket[],
+    selectedProject: string,
+    searchQuery: string,
+) {
     // Filter tickets based on project and search
     const filteredTickets = useMemo(() => {
         return tickets.filter((ticket) => {
             const matchProject =
                 selectedProject === 'all' ||
-                ticket.projectId === selectedProject;
+                ticket.project_id.toString() === selectedProject;
             const matchSearch =
                 searchQuery === '' ||
                 ticket.title
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()) ||
-                ticket.id.toLowerCase().includes(searchQuery.toLowerCase());
+                ticket.ticket_number
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                (ticket.description &&
+                    ticket.description
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()));
             return matchProject && matchSearch;
         });
     }, [tickets, selectedProject, searchQuery]);
@@ -26,7 +33,7 @@ export function useTicketFilter(tickets: Ticket[]) {
         return {
             totalTickets: filteredTickets.length,
             totalStoryPoints: filteredTickets.reduce(
-                (sum, t) => sum + t.storyPoints,
+                (sum, t) => sum + (t.story_points || 0),
                 0,
             ),
             inProgressTickets: filteredTickets.filter(
@@ -39,10 +46,6 @@ export function useTicketFilter(tickets: Ticket[]) {
 
     return {
         filteredTickets,
-        selectedProject,
-        setSelectedProject,
-        searchQuery,
-        setSearchQuery,
         stats,
     };
 }

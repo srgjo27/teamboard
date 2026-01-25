@@ -32,6 +32,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Ticket } from '@/types/ticket';
+import { User } from '@/types/user';
+import { usePage } from '@inertiajs/react';
 import {
     IconArrowRight,
     IconDotsVertical,
@@ -41,7 +44,6 @@ import {
     IconUserPlus,
 } from '@tabler/icons-react';
 import { useState } from 'react';
-import { Ticket } from '../constants/mock-tickets';
 import { TICKET_PRIORITIES } from '../constants/ticket-priorities';
 
 interface TicketCardProps {
@@ -52,12 +54,18 @@ export function TicketCard({ ticket }: TicketCardProps) {
     const priorityConfig = TICKET_PRIORITIES[ticket.priority];
     const [showAssignQA, setShowAssignQA] = useState(false);
 
+    const { allUsers } = usePage<{ allUsers?: User[] }>().props;
+
+    const allQa =
+        allUsers?.filter((user) => user.role?.name === 'quality_assurance') ||
+        [];
+
     return (
-        <Card className="group cursor-pointer transition-all hover:shadow-md">
+        <Card className="group cursor-pointer transition-all hover:shadow-sm">
             <CardHeader className="p-4 pb-3">
                 <div className="mb-2 flex items-start justify-between">
                     <Badge variant="outline" className="font-mono text-xs">
-                        {ticket.id}
+                        {ticket.ticket_number}
                     </Badge>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -123,18 +131,22 @@ export function TicketCard({ ticket }: TicketCardProps) {
                     {/* Assignee & Story Points */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            {ticket.assignee ? (
+                            {ticket.assigned_user ? (
                                 <div className="flex items-center gap-1.5">
                                     <Avatar className="h-6 w-6">
                                         <AvatarFallback className="text-[10px]">
-                                            {ticket.assignee
+                                            {ticket.assigned_user.name
                                                 .split(' ')
                                                 .map((n) => n[0])
                                                 .join('')}
                                         </AvatarFallback>
                                     </Avatar>
                                     <span className="text-xs text-muted-foreground">
-                                        {ticket.assignee.split(' ')[0]}
+                                        {
+                                            ticket.assigned_user.name.split(
+                                                ' ',
+                                            )[0]
+                                        }
                                     </span>
                                 </div>
                             ) : (
@@ -146,7 +158,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
                             {/* QA Assignee for qa-ready and qa-test status */}
                             {(ticket.status === 'qa-ready' ||
                                 ticket.status === 'qa-test') &&
-                                ticket.qaAssignee && (
+                                ticket.qa_assigned_user && (
                                     <>
                                         <span className="text-xs text-muted-foreground">
                                             •
@@ -154,7 +166,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
                                         <div className="flex items-center gap-1.5">
                                             <Avatar className="h-6 w-6 border-2 border-orange-500">
                                                 <AvatarFallback className="bg-orange-100 text-[10px] text-orange-700">
-                                                    {ticket.qaAssignee
+                                                    {ticket.qa_assigned_user.name
                                                         .split(' ')
                                                         .map((n) => n[0])
                                                         .join('')}
@@ -163,7 +175,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
                                             <span className="text-xs font-medium text-orange-600">
                                                 QA:{' '}
                                                 {
-                                                    ticket.qaAssignee.split(
+                                                    ticket.qa_assigned_user.name.split(
                                                         ' ',
                                                     )[0]
                                                 }
@@ -177,7 +189,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
                             variant="secondary"
                             className="h-5 w-5 rounded-full p-0 text-[10px]"
                         >
-                            {ticket.storyPoints}
+                            {ticket.story_points}
                         </Badge>
                     </div>
                 </div>
@@ -185,21 +197,25 @@ export function TicketCard({ ticket }: TicketCardProps) {
 
             {/* Assign QA Dialog */}
             <Dialog open={showAssignQA} onOpenChange={setShowAssignQA}>
-                <DialogContent>
+                <DialogContent className="max-h-[85vh] max-w-lg p-6">
                     <DialogHeader>
                         <DialogTitle>Assign QA Tester</DialogTitle>
                         <DialogDescription>
-                            Assign a QA tester to ticket {ticket.id}
+                            Assign a QA tester to ticket {ticket.ticket_number}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label htmlFor="qa-assignee">QA Tester</Label>
-                            <Select defaultValue={ticket.qaAssignee || ''}>
+                            <Select
+                                defaultValue={
+                                    ticket.qa_assigned_user?.name || ''
+                                }
+                            >
                                 <SelectTrigger id="qa-assignee">
                                     <SelectValue placeholder="Select QA tester" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                {/* <SelectContent>
                                     <SelectItem value="Bob Smith">
                                         Bob Smith (QA)
                                     </SelectItem>
@@ -209,6 +225,22 @@ export function TicketCard({ ticket }: TicketCardProps) {
                                     <SelectItem value="Noah Black">
                                         Noah Black (QA)
                                     </SelectItem>
+                                </SelectContent> */}
+                                <SelectContent>
+                                    {allQa.length > 0 ? (
+                                        allQa.map((qa) => (
+                                            <SelectItem
+                                                key={qa.id}
+                                                value={qa.id.toString()}
+                                            >
+                                                {qa.name}
+                                            </SelectItem>
+                                        ))
+                                    ) : (
+                                        <div className="p-2 text-sm text-muted-foreground">
+                                            No QA testers available.
+                                        </div>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>

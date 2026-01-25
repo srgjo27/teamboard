@@ -148,7 +148,7 @@ export function CreateTimelineDialog({
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className="max-h-[90vh] max-w-2xl"
+                className="max-h-[90vh] max-w-xl"
                 onPointerDownOutside={(e) => isSubmitting && e.preventDefault()}
             >
                 <DialogHeader>

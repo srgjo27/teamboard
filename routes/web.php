@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -27,9 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
 
-    Route::get('tikets', function () {
-        return Inertia::render('tikets/page');
-    })->name('tikets');
+    Route::get('tikets', [TicketController::class, 'index'])->name('tikets');
+    Route::post('tikets', [TicketController::class, 'store'])->name('tikets.store');
+    Route::put('tikets/{ticket}', [TicketController::class, 'update'])->name('tikets.update');
+    Route::delete('tikets/{ticket}', [TicketController::class, 'destroy'])->name('tikets.destroy');
 
     Route::get('timelines', [TimelineController::class, 'index'])->name('timelines');
     Route::post('timelines', [TimelineController::class, 'store'])->name('timelines.store');

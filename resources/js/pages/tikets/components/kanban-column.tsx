@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { Ticket } from '../constants/mock-tickets';
+import { Ticket } from '@/types/ticket';
 import { TICKET_STATUSES } from '../constants/ticket-statuses';
 import { TicketCard } from './ticket-card';
 
@@ -12,7 +12,7 @@ export function KanbanColumn({ status, tickets }: KanbanColumnProps) {
     const StatusIcon = status.icon;
     const columnTickets = tickets.filter((t) => t.status === status.id);
     const totalStoryPoints = columnTickets.reduce(
-        (sum, t) => sum + t.storyPoints,
+        (sum, t) => sum + (t.story_points || 0),
         0,
     );
 

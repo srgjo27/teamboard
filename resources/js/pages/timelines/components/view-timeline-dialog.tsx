@@ -6,10 +6,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Timeline } from '@/types/timeline';
-import { IconCalendar, IconUser } from '@tabler/icons-react';
+import {
+    IconCalendar,
+    IconClock,
+    IconFileText,
+    IconFlag,
+    IconListCheck,
+} from '@tabler/icons-react';
 import { phaseColors, statusColors, typeColors } from '../constants';
 
 interface ViewTimelineDialogProps {
@@ -79,182 +84,164 @@ export function ViewTimelineDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                            <DialogTitle className="text-2xl">
-                                {timeline.title}
-                            </DialogTitle>
-                            <DialogDescription className="mt-2">
-                                {timeline.project.name}
-                            </DialogDescription>
-                        </div>
-                        <div className={`h-3 w-3 rounded-sm ${phaseColor}`} />
-                    </div>
-                </DialogHeader>
-
-                <div className="space-y-6">
-                    {/* Basic Info */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">
-                                Type
-                            </Label>
-                            <div className="flex items-center gap-2">
-                                <Badge
-                                    variant="outline"
-                                    className="font-normal"
-                                >
-                                    {typeLabels[timeline.type]}
-                                </Badge>
-                                {timeline.sprint_number && (
-                                    <span className="text-sm font-medium">
-                                        Sprint #{timeline.sprint_number}
-                                    </span>
-                                )}
+            <DialogContent className="max-h-[85vh] max-w-lg p-0">
+                <div
+                    className={`${phaseColor} rounded-t-lg px-6 py-8 text-white`}
+                >
+                    <DialogHeader>
+                        <div className="flex items-center gap-6">
+                            <div className="flex-1">
+                                <DialogTitle className="text-2xl font-bold">
+                                    {timeline.title}
+                                </DialogTitle>
+                                <DialogDescription className="mt-1.5 text-white/90">
+                                    {timeline.project.name} •{' '}
+                                    {timeline.project.team.name}
+                                </DialogDescription>
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">
-                                Status
-                            </Label>
                             <Badge
-                                variant={
-                                    statusColors[timeline.status]
-                                        ?.variant as 'outline'
-                                }
+                                variant="secondary"
+                                className="bg-white/20 text-white hover:bg-white/30"
                             >
-                                {statusColors[timeline.status]?.label}
+                                {typeLabels[timeline.type]}
+                                {timeline.sprint_number &&
+                                    ` #${timeline.sprint_number}`}
                             </Badge>
+                        </div>
+                    </DialogHeader>
+                </div>
+
+                <ScrollArea className="max-h-[calc(85vh-140px)]">
+                    <div className="space-y-6 px-6 py-5">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="rounded-lg border bg-card p-4">
+                                <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                    <IconFlag className="h-4 w-4" />
+                                    Status
+                                </div>
+                                <Badge
+                                    variant={
+                                        statusColors[timeline.status]
+                                            ?.variant as 'outline'
+                                    }
+                                    className="text-sm"
+                                >
+                                    {statusColors[timeline.status]?.label}
+                                </Badge>
+                            </div>
+
+                            <div className="rounded-lg border bg-card p-4">
+                                <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                    <IconClock className="h-4 w-4" />
+                                    Duration
+                                </div>
+                                <p className="text-sm font-semibold">
+                                    {calculateDuration() || '-'}
+                                </p>
+                            </div>
                         </div>
 
                         {timeline.phase && (
-                            <div className="space-y-2">
-                                <Label className="text-xs text-muted-foreground">
+                            <div className="rounded-lg border bg-card p-4">
+                                <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                    <IconFileText className="h-4 w-4" />
                                     SDLC Phase
-                                </Label>
-                                <p className="text-sm font-medium">
-                                    {phaseLabels[timeline.phase]}
-                                </p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`h-2 w-2 rounded-full ${phaseColor}`}
+                                    />
+                                    <p className="text-sm font-semibold">
+                                        {phaseLabels[timeline.phase]}
+                                    </p>
+                                </div>
                             </div>
                         )}
 
-                        <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">
-                                Duration
-                            </Label>
-                            <p className="text-sm font-medium">
-                                {calculateDuration()}
-                            </p>
-                        </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Timeline Period */}
-                    <div className="space-y-4">
-                        <Label className="text-sm font-semibold">
-                            Timeline Period
-                        </Label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="rounded-lg border bg-muted/50 p-4">
-                                <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="rounded-lg border bg-card">
+                            <div className="border-b bg-muted/50 px-4 py-3">
+                                <div className="flex items-center gap-2 text-sm font-semibold">
                                     <IconCalendar className="h-4 w-4" />
-                                    Start Date
+                                    Timeline Period
                                 </div>
-                                <p className="text-sm font-medium">
-                                    {formatDate(timeline.start_date)}
-                                </p>
                             </div>
-                            <div className="rounded-lg border bg-muted/50 p-4">
-                                <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
-                                    <IconCalendar className="h-4 w-4" />
-                                    End Date
+                            <div className="grid grid-cols-2 divide-x">
+                                <div className="p-4">
+                                    <p className="mb-1 text-xs font-medium text-muted-foreground">
+                                        Start Date
+                                    </p>
+                                    <p className="text-sm font-medium">
+                                        {formatDate(timeline.start_date)}
+                                    </p>
                                 </div>
-                                <p className="text-sm font-medium">
-                                    {formatDate(timeline.end_date)}
-                                </p>
+                                <div className="p-4">
+                                    <p className="mb-1 text-xs font-medium text-muted-foreground">
+                                        End Date
+                                    </p>
+                                    <p className="text-sm font-medium">
+                                        {formatDate(timeline.end_date)}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Description */}
-                    {timeline.description && (
-                        <>
-                            <Separator />
-                            <div className="space-y-2">
-                                <Label className="text-sm font-semibold">
-                                    Description
-                                </Label>
-                                <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                                    {timeline.description}
-                                </p>
-                            </div>
-                        </>
-                    )}
-
-                    {/* Deliverables */}
-                    {timeline.deliverables &&
-                        timeline.deliverables.length > 0 &&
-                        timeline.deliverables[0] !== '' && (
-                            <>
-                                <Separator />
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-semibold">
-                                        Deliverables
-                                    </Label>
-                                    <ul className="space-y-2">
-                                        {timeline.deliverables.map(
-                                            (deliverable, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="flex items-start gap-2 text-sm"
-                                                >
-                                                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                                                    <span className="text-muted-foreground">
-                                                        {deliverable}
-                                                    </span>
-                                                </li>
-                                            ),
-                                        )}
-                                    </ul>
+                        {timeline.description && (
+                            <div className="rounded-lg border bg-card">
+                                <div className="border-b bg-muted/50 px-4 py-3">
+                                    <div className="flex items-center gap-2 text-sm font-semibold">
+                                        <IconFileText className="h-4 w-4" />
+                                        Description
+                                    </div>
                                 </div>
-                            </>
+                                <div className="p-4">
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                                        {timeline.description}
+                                    </p>
+                                </div>
+                            </div>
                         )}
 
-                    {/* Creator Info */}
-                    {timeline.creator && (
-                        <>
-                            <Separator />
-                            <div className="space-y-2">
-                                <Label className="text-xs text-muted-foreground">
-                                    Created By
-                                </Label>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                                        <IconUser className="h-4 w-4 text-primary" />
+                        {timeline.deliverables &&
+                            timeline.deliverables.length > 0 &&
+                            timeline.deliverables[0] !== '' && (
+                                <div className="rounded-lg border bg-card">
+                                    <div className="border-b bg-muted/50 px-4 py-3">
+                                        <div className="flex items-center gap-2 text-sm font-semibold">
+                                            <IconListCheck className="h-4 w-4" />
+                                            Deliverables
+                                            <Badge
+                                                variant="secondary"
+                                                className="ml-auto"
+                                            >
+                                                {timeline.deliverables.length}
+                                            </Badge>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium">
-                                            {timeline.creator}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {new Date(
-                                                timeline.created_at,
-                                            ).toLocaleDateString('id-ID', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                            })}
-                                        </p>
+                                    <div className="p-4">
+                                        <ul className="space-y-2.5">
+                                            {timeline.deliverables.map(
+                                                (deliverable, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="flex items-start gap-3"
+                                                    >
+                                                        <div className="mt-1.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                                                            <span className="text-xs font-semibold text-primary">
+                                                                {index + 1}
+                                                            </span>
+                                                        </div>
+                                                        <span className="flex-1 text-sm leading-relaxed">
+                                                            {deliverable}
+                                                        </span>
+                                                    </li>
+                                                ),
+                                            )}
+                                        </ul>
                                     </div>
                                 </div>
-                            </div>
-                        </>
-                    )}
-                </div>
+                            )}
+                    </div>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
     );
