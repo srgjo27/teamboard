@@ -6,7 +6,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,25 +18,29 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Project, Timeline } from '@/types/ticket';
-import { IconPlus, IconX, IconUpload, IconFile, IconTag } from '@tabler/icons-react';
-import { useState } from 'react';
+import { Project, Timeline, Ticket } from '@/types/ticket';
+import { IconPaperclip, IconX, IconUpload, IconFile, IconTag } from '@tabler/icons-react';
 import { useFilteredTimelines } from '../hooks/use-filtered-timelines';
 import { useProjectTeamMembers } from '../hooks/use-project-team-members';
 import { useTicketForm } from '../hooks/use-ticket-form';
 import { useFileUpload } from '../hooks/use-file-upload';
 import { useTagsInput } from '../hooks/use-tags-input';
 
-interface CreateTicketDialogProps {
+interface EditTicketDialogProps {
+    ticket: Ticket;
     projects: Project[];
     timelines: Timeline[];
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }
 
-export function CreateTicketDialog({
+export function EditTicketDialog({
+    ticket,
     projects,
     timelines,
-}: CreateTicketDialogProps) {
-    const [open, setOpen] = useState(false);
+    open,
+    onOpenChange,
+}: EditTicketDialogProps) {
 
     const {
         formData,
@@ -45,7 +48,8 @@ export function CreateTicketDialog({
         isSubmitting,
         handleInputChange,
         handleSubmit: submitForm,
-    } = useTicketForm();
+        removeAttachment,
+    } = useTicketForm({ ticket });
 
     const filteredTimelines = useFilteredTimelines(
         timelines,
@@ -64,7 +68,6 @@ export function CreateTicketDialog({
         handleDragOver,
         handleDrop,
         handleFileSelect,
-        removeFile,
     } = useFileUpload({
         currentFiles: formData.attachments,
         onFilesChange: (files) => handleInputChange('attachments', files),
@@ -82,28 +85,21 @@ export function CreateTicketDialog({
     });
 
     const handleSubmit = (e: React.FormEvent) => {
-        submitForm(e, () => setOpen(false));
+        submitForm(e, () => onOpenChange(false));
     };
 
-
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <IconPlus className="mr-2 h-4 w-4" />
-                    Create Ticket
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] max-w-4xl">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[80vh] max-w-3xl">
 
                 <DialogHeader>
-                    <DialogTitle>Create New Ticket</DialogTitle>
+                    <DialogTitle>Edit Ticket</DialogTitle>
                     <DialogDescription>
-                        Add a new ticket to your sprint backlog
+                        Update ticket information and details.
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} id="create-ticket-form">
+                <form onSubmit={handleSubmit} id="edit-ticket-form">
                     <div className="grid gap-6 no-scrollbar -mx-4 max-h-[60vh] overflow-y-auto px-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
@@ -510,37 +506,48 @@ export function CreateTicketDialog({
                                 {formData.attachments.length > 0 && (
                                     <div className="space-y-2">
                                         <p className="text-xs font-medium text-muted-foreground">
-                                            {formData.attachments.length} file{formData.attachments.length > 1 ? 's' : ''} selected
+                                            {formData.attachments.length} file{formData.attachments.length > 1 ? 's' : ''} attached
                                         </p>
                                         <div className="space-y-2">
-                                            {formData.attachments.map((file, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="group flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5 transition-colors hover:bg-muted/50"
-                                                >
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                                                        <IconFile className="h-4 w-4 text-primary" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="truncate text-sm font-medium">
-                                                            {file.name}
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {(file.size / 1024).toFixed(1)} KB
-                                                        </p>
-                                                    </div>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                                                        onClick={() => removeFile(index)}
-                                                        disabled={isSubmitting}
+                                            {formData.attachments.map((attachment, index) => {
+                                                const isFile = attachment instanceof File;
+                                                const name = isFile ? attachment.name : attachment.name;
+                                                const size = isFile ? attachment.size : attachment.size;
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="group flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5 transition-colors hover:bg-muted/50"
                                                     >
-                                                        <IconX className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            ))}
+                                                        <div className={`flex h-8 w-8 items-center justify-center rounded-md ${isFile ? 'bg-primary/10' : 'bg-muted'}`}>
+                                                            {isFile ? (
+                                                                <IconFile className="h-4 w-4 text-primary" />
+                                                            ) : (
+                                                                <IconPaperclip className="h-4 w-4 text-muted-foreground" />
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="truncate text-sm font-medium">
+                                                                {name}
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {(size / 1024).toFixed(1)} KB
+                                                                {!isFile && ' • Existing'}
+                                                            </p>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                                                            onClick={() => removeAttachment(index)}
+                                                            disabled={isSubmitting}
+                                                        >
+                                                            <IconX className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
@@ -553,13 +560,13 @@ export function CreateTicketDialog({
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setOpen(false)}
+                        onClick={() => onOpenChange(false)}
                         disabled={isSubmitting}
                     >
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isSubmitting} form="create-ticket-form">
-                        {isSubmitting ? 'Creating...' : 'Create Ticket'}
+                    <Button type="submit" disabled={isSubmitting} form="edit-ticket-form">
+                        {isSubmitting ? 'Updating...' : 'Update Ticket'}
                     </Button>
                 </DialogFooter>
 

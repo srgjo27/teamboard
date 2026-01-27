@@ -60,7 +60,7 @@ export default function AddMemberDialog({
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Add Team Member</DialogTitle>
                     <DialogDescription>
@@ -91,10 +91,10 @@ export default function AddMemberDialog({
                                     <SelectValue placeholder="Choose a user...">
                                         {data.user_id
                                             ? availableUsers.find(
-                                                  (u) =>
-                                                      u.id.toString() ===
-                                                      data.user_id,
-                                              )?.name
+                                                (u) =>
+                                                    u.id.toString() ===
+                                                    data.user_id,
+                                            )?.name
                                             : 'Choose a user...'}
                                     </SelectValue>
                                 </SelectTrigger>
@@ -112,14 +112,14 @@ export default function AddMemberDialog({
                                                         </span>
                                                         {user.role
                                                             ?.display_name && (
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {' '}
-                                                                {
-                                                                    user.role
-                                                                        .display_name
-                                                                }
-                                                            </span>
-                                                        )}
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    {' '}
+                                                                    {
+                                                                        user.role
+                                                                            .display_name
+                                                                    }
+                                                                </span>
+                                                            )}
                                                     </div>
                                                     <span className="text-xs text-muted-foreground">
                                                         {user.email}

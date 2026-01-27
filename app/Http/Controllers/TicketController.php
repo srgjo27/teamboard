@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 class TicketController extends Controller
@@ -55,7 +56,7 @@ class TicketController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $allUsers = Cache::remember('users.for-projects', 600, function () {
+        $allUsers = Cache::remember('users.for-tickets', 600, function () {
             return User::with('role:id,name,display_name')
                 ->select('id', 'name', 'email', 'role_id')
                 ->orderBy('name')
@@ -85,6 +86,8 @@ class TicketController extends Controller
             'estimated_hours' => 'nullable|numeric|min:0',
             'story_points' => 'nullable|integer|min:0',
             'tags' => 'nullable|array',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'file|max:10240',
         ]);
 
         $project = Project::findOrFail($validated['project_id']);
@@ -97,6 +100,20 @@ class TicketController extends Controller
         
         $validated['reporter_id'] = $request->user()->id;
         $validated['status'] = $validated['status'] ?? 'backlog';
+
+        if ($request->hasFile('attachments')) {
+            $attachmentPaths = [];
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('ticket-attachments', 'public');
+                $attachmentPaths[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ];
+            }
+            $validated['attachments'] = $attachmentPaths;
+        }
 
         $ticket = Ticket::create($validated);
 
@@ -118,6 +135,8 @@ class TicketController extends Controller
             'actual_hours' => 'nullable|numeric|min:0',
             'story_points' => 'nullable|integer|min:0',
             'tags' => 'nullable|array',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'file|max:10240',
         ]);
 
         if (isset($validated['status']) && $validated['status'] !== $ticket->status) {
@@ -125,6 +144,23 @@ class TicketController extends Controller
                 $validated['resolved_at'] = now();
                 $validated['closed_at'] = now();
             }
+        }
+
+        if ($request->hasFile('attachments')) {
+            $existingAttachments = $ticket->attachments ?? [];
+            $newAttachments = [];
+            
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('ticket-attachments', 'public');
+                $newAttachments[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ];
+            }
+            
+            $validated['attachments'] = array_merge($existingAttachments, $newAttachments);
         }
 
         $ticket->update($validated);

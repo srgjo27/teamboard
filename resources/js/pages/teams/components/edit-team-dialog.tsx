@@ -65,7 +65,7 @@ export default function EditTeamDialog({ team, trigger }: EditTeamDialogProps) {
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Edit Team</DialogTitle>
                     <DialogDescription>

@@ -540,18 +540,18 @@ export function CreateTimelineDialog({
                                             />
                                             {formData.deliverables.length >
                                                 1 && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        removeDeliverable(index)
-                                                    }
-                                                    disabled={isSubmitting}
-                                                >
-                                                    <IconTrash className="h-4 w-4" />
-                                                </Button>
-                                            )}
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            removeDeliverable(index)
+                                                        }
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        <IconTrash className="h-4 w-4" />
+                                                    </Button>
+                                                )}
                                         </div>
                                     ),
                                 )}

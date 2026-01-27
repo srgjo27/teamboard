@@ -56,7 +56,7 @@ export default function CreateTeamDialog() {
                     Create Team
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Create New Team</DialogTitle>
                     <DialogDescription>

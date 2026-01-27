@@ -9,9 +9,8 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { TicketPageProps } from '@/types/ticket';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { IconSearch } from '@tabler/icons-react';
-import { useState } from 'react';
 import { CreateTicketDialog } from './components/create-ticket-dialog';
 import { KanbanColumn } from './components/kanban-column';
 import { TicketLegends } from './components/ticket-legends';
@@ -31,38 +30,11 @@ export default function TiketsPage({
     projects,
     timelines,
 }: TicketPageProps) {
-    const [selectedProject, setSelectedProject] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const { filteredTickets, stats } = useTicketFilter(
-        tickets,
-        selectedProject,
-        searchQuery,
-    );
-
-    const handleProjectChange = (value: string) => {
-        setSelectedProject(value);
-        if (value === 'all') {
-            router.get('/tikets', {}, { preserveState: true });
-        } else {
-            router.get(
-                '/tikets',
-                { project_id: value },
-                { preserveState: true },
-            );
-        }
-    };
-
-    const handleSearchChange = (value: string) => {
-        setSearchQuery(value);
-        if (value) {
-            router.get(
-                '/tikets',
-                { search: value },
-                { preserveState: true, preserveScroll: true },
-            );
-        }
-    };
+    const {
+        stats,
+        handleProjectChange,
+        handleSearchChange,
+    } = useTicketFilter(tickets);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -83,7 +55,6 @@ export default function TiketsPage({
                     <div className="flex flex-wrap items-center gap-2">
                         {/* Project Filter */}
                         <Select
-                            value={selectedProject}
                             onValueChange={handleProjectChange}
                         >
                             <SelectTrigger className="w-[180px]">
@@ -110,7 +81,6 @@ export default function TiketsPage({
                             <Input
                                 placeholder="Search tickets..."
                                 className="w-[200px] pl-8"
-                                value={searchQuery}
                                 onChange={(e) =>
                                     handleSearchChange(e.target.value)
                                 }
@@ -139,7 +109,9 @@ export default function TiketsPage({
                             <KanbanColumn
                                 key={status.id}
                                 status={status}
-                                tickets={filteredTickets}
+                                tickets={tickets}
+                                projects={projects}
+                                timelines={timelines}
                             />
                         ))}
                     </div>

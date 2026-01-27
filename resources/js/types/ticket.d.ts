@@ -11,19 +11,24 @@ export interface Ticket {
     type: 'bug' | 'feature' | 'task' | 'improvement' | 'documentation';
     priority: 'highest' | 'high' | 'medium' | 'low' | 'lowest';
     status:
-        | 'backlog'
-        | 'todo'
-        | 'pending'
-        | 'inprogress'
-        | 'qa-ready'
-        | 'qa-test'
-        | 'review'
-        | 'done';
+    | 'backlog'
+    | 'todo'
+    | 'pending'
+    | 'inprogress'
+    | 'qa-ready'
+    | 'qa-test'
+    | 'review'
+    | 'done';
     due_date: string | null;
     estimated_hours: number | null;
     actual_hours: number | null;
     tags: string[] | null;
-    attachments: string[] | null;
+    attachments: {
+        name: string;
+        path: string;
+        size: number;
+        mime_type: string;
+    }[] | null;
     story_points: number | null;
     resolved_at: string | null;
     closed_at: string | null;
@@ -80,6 +85,13 @@ export interface TicketPageProps {
     timelines: Timeline[];
 }
 
+export type AttachmentItem = File | {
+    name: string;
+    path: string;
+    size: number;
+    mime_type: string;
+};
+
 export interface TicketFormData {
     project_id: string;
     timeline_id: string;
@@ -93,4 +105,5 @@ export interface TicketFormData {
     estimated_hours: string;
     story_points: string;
     tags: string[];
+    attachments: AttachmentItem[];
 }

@@ -1,14 +1,16 @@
 import { Badge } from '@/components/ui/badge';
-import { Ticket } from '@/types/ticket';
+import { Ticket, Project, Timeline } from '@/types/ticket';
 import { TICKET_STATUSES } from '../constants/ticket-statuses';
 import { TicketCard } from './ticket-card';
 
 interface KanbanColumnProps {
     status: (typeof TICKET_STATUSES)[number];
     tickets: Ticket[];
+    projects: Project[];
+    timelines: Timeline[];
 }
 
-export function KanbanColumn({ status, tickets }: KanbanColumnProps) {
+export function KanbanColumn({ status, tickets, projects, timelines }: KanbanColumnProps) {
     const StatusIcon = status.icon;
     const columnTickets = tickets.filter((t) => t.status === status.id);
     const totalStoryPoints = columnTickets.reduce(
@@ -18,7 +20,7 @@ export function KanbanColumn({ status, tickets }: KanbanColumnProps) {
 
     return (
         <div className="flex min-w-[280px] flex-col rounded-lg border bg-muted/30">
-            {/* Column Header */}
+            {/* Header */}
             <div className="flex items-center justify-between border-b bg-background p-3">
                 <div className="flex items-center gap-2">
                     <div className={`rounded p-1 ${status.color}`}>
@@ -44,7 +46,12 @@ export function KanbanColumn({ status, tickets }: KanbanColumnProps) {
             {/* Tickets */}
             <div className="flex-1 space-y-2 overflow-y-auto p-2">
                 {columnTickets.map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={ticket} />
+                    <TicketCard
+                        key={ticket.id}
+                        ticket={ticket}
+                        projects={projects}
+                        timelines={timelines}
+                    />
                 ))}
 
                 {columnTickets.length === 0 && (

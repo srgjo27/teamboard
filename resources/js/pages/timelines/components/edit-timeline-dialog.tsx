@@ -21,6 +21,7 @@ import { Project, Timeline, TimelineFormData } from '@/types/timeline';
 import { router } from '@inertiajs/react';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useEffect, useMemo, useState } from 'react';
+import { TimelineTypeInfo } from './timeline-type-info';
 
 interface EditTimelineDialogProps {
     timeline: Timeline;
@@ -225,6 +226,8 @@ export function EditTimelineDialog({
                                                 *
                                             </span>
                                         </Label>
+
+                                        <TimelineTypeInfo />
                                     </div>
                                     <Select
                                         value={formData.type}
@@ -553,18 +556,18 @@ export function EditTimelineDialog({
                                             />
                                             {formData.deliverables.length >
                                                 1 && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        removeDeliverable(index)
-                                                    }
-                                                    disabled={isSubmitting}
-                                                >
-                                                    <IconTrash className="h-4 w-4" />
-                                                </Button>
-                                            )}
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            removeDeliverable(index)
+                                                        }
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        <IconTrash className="h-4 w-4" />
+                                                    </Button>
+                                                )}
                                         </div>
                                     ),
                                 )}

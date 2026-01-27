@@ -1,51 +1,53 @@
 import { Ticket } from '@/types/ticket';
-import { useMemo } from 'react';
+import { router } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 
-export function useTicketFilter(
-    tickets: Ticket[],
-    selectedProject: string,
-    searchQuery: string,
-) {
-    // Filter tickets based on project and search
-    const filteredTickets = useMemo(() => {
-        return tickets.filter((ticket) => {
-            const matchProject =
-                selectedProject === 'all' ||
-                ticket.project_id.toString() === selectedProject;
-            const matchSearch =
-                searchQuery === '' ||
-                ticket.title
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) ||
-                ticket.ticket_number
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) ||
-                (ticket.description &&
-                    ticket.description
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase()));
-            return matchProject && matchSearch;
-        });
-    }, [tickets, selectedProject, searchQuery]);
+export function useTicketFilter(tickets: Ticket[]) {
+    const [, setSelectedProject] = useState('all');
+    const [, setSearchQuery] = useState('');
 
-    // Calculate statistics
     const stats = useMemo(() => {
         return {
-            totalTickets: filteredTickets.length,
-            totalStoryPoints: filteredTickets.reduce(
+            totalTickets: tickets.length,
+            totalStoryPoints: tickets.reduce(
                 (sum, t) => sum + (t.story_points || 0),
                 0,
             ),
-            inProgressTickets: filteredTickets.filter(
+            inProgressTickets: tickets.filter(
                 (t) => t.status === 'inprogress',
             ).length,
-            doneTickets: filteredTickets.filter((t) => t.status === 'done')
+            doneTickets: tickets.filter((t) => t.status === 'done')
                 .length,
         };
-    }, [filteredTickets]);
+    }, [tickets]);
+
+    const handleProjectChange = (value: string) => {
+        setSelectedProject(value);
+        if (value === 'all') {
+            router.get('/tikets', {}, { preserveState: true });
+        } else {
+            router.get(
+                '/tikets',
+                { project_id: value },
+                { preserveState: true },
+            );
+        }
+    };
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+        if (value) {
+            router.get(
+                '/tikets',
+                { search: value },
+                { preserveState: true, preserveScroll: true },
+            );
+        }
+    };
 
     return {
-        filteredTickets,
         stats,
+        handleProjectChange,
+        handleSearchChange,
     };
 }
