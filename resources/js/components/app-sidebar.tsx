@@ -14,6 +14,7 @@ import {
     analytics,
     dashboard,
     manageUsers,
+    notifications,
     projects,
     teams,
     tikets,
@@ -22,6 +23,8 @@ import {
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    Bell,
+    BellDot,
     BookOpen,
     Calendar,
     ChartArea,
@@ -69,6 +72,11 @@ const mainNavItems: NavItem[] = [
         title: 'Manage Users',
         href: manageUsers(),
         icon: Users,
+    },
+    {
+        title: 'Notifications',
+        href: notifications(),
+        icon: Bell,
     },
 ];
 

@@ -1,3 +1,24 @@
+export interface TicketComment {
+    id: number;
+    ticket_id: number;
+    user_id: number;
+    comment: string;
+    attachments: {
+        name: string;
+        path: string;
+        size: number;
+        mime_type: string;
+    }[] | null;
+    type: 'comment' | 'status_change' | 'assignment_change' | 'system';
+    is_internal: boolean;
+    created_at: string;
+    updated_at: string;
+    user: {
+        id: number;
+        name: string;
+    };
+}
+
 export interface Ticket {
     id: number;
     project_id: number;
@@ -56,6 +77,7 @@ export interface Ticket {
         id: number;
         name: string;
     } | null;
+    comments?: TicketComment[];
 }
 
 export interface Project {

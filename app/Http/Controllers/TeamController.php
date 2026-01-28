@@ -139,6 +139,13 @@ class TeamController extends Controller
 
         $team->users()->attach($validated['user_id']);
 
+        $user = User::find($validated['user_id']);
+        $user->notify(new \App\Notifications\TeamAssignedNotification(
+            $team->id,
+            $team->name,
+            $request->user()->name
+        ));
+
         Cache::forget('teams.index');
 
         return back()->with('success', 'Member added successfully!');
@@ -147,7 +154,7 @@ class TeamController extends Controller
     /**
      * Remove a member from a team.
      */
-    public function removeMember(Team $team, User $user): RedirectResponse
+    public function removeMember(Request $request, Team $team, User $user): RedirectResponse
     {
         if (!$team->users()->where('user_id', $user->id)->exists()) {
             return back()->withErrors([
@@ -156,6 +163,12 @@ class TeamController extends Controller
         }
 
         $team->users()->detach($user->id);
+
+        $user->notify(new \App\Notifications\TeamRemovedNotification(
+            $team->id,
+            $team->name,
+            $request->user()->name
+        ));
 
         Cache::forget('teams.index');
 

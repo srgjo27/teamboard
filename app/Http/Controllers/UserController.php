@@ -97,10 +97,20 @@ class UserController extends Controller
             'role_id' => 'required|exists:roles,id'
         ]);
 
+        $oldRole = $user->role?->display_name ?? 'No Role';
+        
         $user->update([
             'role_id' => $validated['role_id']
         ]);
 
+        $user->load('role');
+        $newRole = $user->role->display_name;
+
+        $user->notify(new \App\Notifications\RoleAssignedNotification(
+            $oldRole,
+            $newRole,
+            $request->user()->name
+        ));
 
         return redirect()->back()->with('success', 'User role updated successfully.');
     }

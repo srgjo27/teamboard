@@ -8,7 +8,6 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 class TicketController extends Controller
@@ -21,6 +20,7 @@ class TicketController extends Controller
             'reporter:id,name',
             'assignedUser:id,name',
             'qaAssignedUser:id,name',
+            'comments.user:id,name',
         ]);
 
         if ($request->has('project_id') && $request->project_id !== 'all') {

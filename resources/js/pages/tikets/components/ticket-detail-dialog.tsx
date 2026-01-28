@@ -21,6 +21,7 @@ import {
 import { TICKET_PRIORITIES } from '../constants/ticket-priorities';
 import { TICKET_STATUSES } from '../constants/ticket-statuses';
 import { TICKET_TYPES } from '../constants/ticket-types';
+import { TicketComments } from './ticket-comments';
 
 interface TicketDetailDialogProps {
     ticket: Ticket;
@@ -39,7 +40,7 @@ export function TicketDetailDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] max-w-6xl overflow-y-auto">
+            <DialogContent className="max-h-[90vh] max-w-6xl">
                 <DialogHeader>
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex-1">
@@ -56,7 +57,7 @@ export function TicketDetailDialog({
                     </div>
                 </DialogHeader>
 
-                <div className="space-y-4 no-scrollbar -mx-4 max-h-[70vh] overflow-y-auto px-4">
+                <div className="space-y-4 overflow-y-auto -mx-4 px-4" style={{ maxHeight: 'calc(90vh - 120px)' }}>
                     <div className="flex flex-wrap gap-2">
                         <Badge
                             variant="secondary"
@@ -112,46 +113,38 @@ export function TicketDetailDialog({
                                             (attachment, index) => {
                                                 const isImage = attachment.mime_type.startsWith('image/');
 
-                                                return (
+                                                return isImage ? (
                                                     <a
                                                         key={index}
                                                         href={`/storage/${attachment.path}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="group relative overflow-hidden rounded-lg border border-border bg-muted/50 transition-all"
+                                                        className="block max-w-md overflow-hidden rounded-lg border border-border transition-all hover:border-primary"
                                                     >
-                                                        {isImage ? (
-                                                            <div className="space-y-2">
-                                                                <div className="aspect-video w-full overflow-hidden bg-muted">
-                                                                    <img
-                                                                        src={`/storage/${attachment.path}`}
-                                                                        alt={attachment.name}
-                                                                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                                                    />
-                                                                </div>
-                                                                <div className="px-3 pb-3">
-                                                                    <p className="truncate text-sm font-medium">
-                                                                        {attachment.name}
-                                                                    </p>
-                                                                    <p className="text-xs text-muted-foreground">
-                                                                        {(attachment.size / 1024).toFixed(1)} KB
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-3 p-3">
-                                                                <IconPaperclip className="h-8 w-8 text-muted-foreground" />
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="truncate font-medium">
-                                                                        {attachment.name}
-                                                                    </p>
-                                                                    <p className="text-xs text-muted-foreground">
-                                                                        {(attachment.size / 1024).toFixed(1)} KB
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                        <img
+                                                            src={`/storage/${attachment.path}`}
+                                                            alt={attachment.name}
+                                                            className="max-h-50 w-full object-contain"
+                                                            loading="lazy"
+                                                        />
+                                                        <div className="bg-muted/50 px-3 py-2">
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {attachment.name} ({(attachment.size / 1024).toFixed(1)} KB)
+                                                            </p>
+                                                        </div>
                                                     </a>
+                                                ) : (
+                                                    <div className="flex items-center gap-3 p-3">
+                                                        <IconPaperclip className="h-8 w-8 text-muted-foreground" />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="truncate font-medium">
+                                                                {attachment.name}
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {(attachment.size / 1024).toFixed(1)} KB
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 );
                                             }
                                         )}
@@ -336,6 +329,11 @@ export function TicketDetailDialog({
                             )}
                         </div>
                     </div>
+
+                    <Separator />
+
+                    {/* Comments Section */}
+                    <TicketComments ticket={ticket} />
                 </div>
             </DialogContent>
         </Dialog>

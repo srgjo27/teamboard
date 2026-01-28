@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TicketCommentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\UserController;
@@ -33,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('tikets/{ticket}', [TicketController::class, 'update'])->name('tikets.update');
     Route::delete('tikets/{ticket}', [TicketController::class, 'destroy'])->name('tikets.destroy');
 
+    Route::post('tikets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('tikets.comments.store');
+    Route::put('tikets/comments/{comment}', [TicketCommentController::class, 'update'])->name('tikets.comments.update');
+    Route::delete('tikets/comments/{comment}', [TicketCommentController::class, 'destroy'])->name('tikets.comments.destroy');
+
     Route::get('timelines', [TimelineController::class, 'index'])->name('timelines');
     Route::post('timelines', [TimelineController::class, 'store'])->name('timelines.store');
     Route::put('timelines/{timeline}', [TimelineController::class, 'update'])->name('timelines.update');
@@ -51,6 +57,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('manage-users/{user}/role', [UserController::class, 'updateRole'])->name('manage-users.update-role');
         Route::delete('manage-users/{user}', [UserController::class, 'destroy'])->name('manage-users.destroy');
     });
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('notifications/clear-all', [NotificationController::class, 'destroyAll'])->name('notifications.clear-all');
+
 });
 
 require __DIR__.'/settings.php';

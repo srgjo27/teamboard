@@ -255,7 +255,7 @@ function TeamCard({
     );
 }
 
-export default function Teams({ teams, allUsers }: TeamsProps) {
+export default function TeamsPage({ teams, allUsers }: TeamsProps) {
     const { auth } = usePage().props as any;
     const totalMembers = teams.reduce(
         (sum, team) => sum + team.members_count,

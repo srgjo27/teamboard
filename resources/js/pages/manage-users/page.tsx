@@ -39,7 +39,7 @@ interface ManageUsersProps {
     roles: Array<{ id: number; name: string; display_name: string }>;
 }
 
-export default function ManageUsers({ users, roles }: ManageUsersProps) {
+export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
     const { auth } = usePage().props as any;
     const currentUserId = auth?.user?.id;
 
