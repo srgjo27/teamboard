@@ -7,9 +7,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
 import { TimelinePageProps } from '@/types/timeline';
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
     IconCalendar,
     IconChevronLeft,
@@ -20,49 +19,42 @@ import { TimelineLegend } from './components/timeline-legend';
 import { TimelineRow } from './components/timeline-row';
 import { TimelineStats } from './components/timeline-stats';
 import {
+    TIMELINE_BREADCRUMBS,
+    TIMELINE_INITIAL_DATE,
+    TIMELINE_TOTAL_WEEKS,
+} from './constants/timeline-config';
+import {
     useGroupedTimelines,
     useTimelineStats,
 } from './hooks/use-timeline-data';
 import { useTimelineNavigation } from './hooks/use-timeline-navigation';
+import { useTimelinePermissions } from './hooks/use-timeline-permissions';
 import { useTimelineView } from './hooks/use-timeline-view';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Timelines',
-        href: '#',
-    },
-];
 
-const TOTAL_WEEKS = 12;
 
 export default function TimelinePage({
     timelines,
     projects,
 }: TimelinePageProps) {
-    const { auth } = usePage().props as any;
+    const { canManageTimelines } = useTimelinePermissions();
 
     const { viewStart, navigatePrevious, navigateNext, navigateToToday } =
         useTimelineNavigation({
-            totalWeeks: TOTAL_WEEKS,
-            initialDate: new Date(2026, 0, 1),
+            totalWeeks: TIMELINE_TOTAL_WEEKS,
+            initialDate: TIMELINE_INITIAL_DATE,
         });
 
     const { viewEnd, weekLabels, ...timelineInfo } = useTimelineView({
         viewStart,
-        totalWeeks: TOTAL_WEEKS,
+        totalWeeks: TIMELINE_TOTAL_WEEKS,
     });
 
     const stats = useTimelineStats(timelines);
     const groupedTimelines = useGroupedTimelines(timelines);
 
-    const canActions =
-        auth?.user?.role?.name === 'scrum_master' ||
-        auth?.user?.role?.name === 'product_owner' ||
-        auth?.user?.role?.name === 'product_manager' ||
-        auth?.user?.role?.name === 'admin';
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={TIMELINE_BREADCRUMBS}>
             <Head title="Timelines" />
             <div className="p-6">
                 <div className="mb-6 flex items-center justify-between">
@@ -76,7 +68,7 @@ export default function TimelinePage({
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        {canActions && (
+                        {canManageTimelines && (
                             <CreateTimelineDialog
                                 projects={projects}
                                 timelines={timelines}
@@ -148,7 +140,7 @@ export default function TimelinePage({
                                         allTimelines={timelines}
                                         viewStart={viewStart}
                                         viewEnd={viewEnd}
-                                        canActions={canActions}
+                                        canActions={canManageTimelines}
                                     />
                                 ))
                             ) : (

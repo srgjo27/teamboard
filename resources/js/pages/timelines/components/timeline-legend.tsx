@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Timeline } from '@/types/timeline';
-import { phaseColors, phaseLabels } from '../constants';
+import { phaseColors, phaseLabels } from '../constants/constants';
 
 interface TimelineLegendProps {
     timelines: Timeline[];

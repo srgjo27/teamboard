@@ -25,13 +25,13 @@ export const phaseLabels: Record<string, string> = {
 };
 
 export const statusColors: Record<string, { variant: string; label: string }> =
-    {
-        in_progress: { variant: 'default', label: 'In Progress' },
-        pending: { variant: 'secondary', label: 'Pending' },
-        completed: { variant: 'outline', label: 'Completed' },
-        delayed: { variant: 'destructive', label: 'Delayed' },
-        cancelled: { variant: 'outline', label: 'Cancelled' },
-    };
+{
+    in_progress: { variant: 'default', label: 'In Progress' },
+    pending: { variant: 'secondary', label: 'Pending' },
+    completed: { variant: 'outline', label: 'Completed' },
+    delayed: { variant: 'destructive', label: 'Delayed' },
+    cancelled: { variant: 'outline', label: 'Cancelled' },
+};
 
 export const typeColors: Record<string, string> = {
     sprint: 'bg-blue-500',
@@ -39,6 +39,14 @@ export const typeColors: Record<string, string> = {
     milestone: 'bg-purple-500',
     event: 'bg-orange-500',
 };
+
+export const typeLabels: Record<string, string> = {
+    sprint: 'Sprint',
+    phase: 'Phase',
+    milestone: 'Milestone',
+    event: 'Event',
+};
+
 
 export const timelineTypeInfo = [
     {

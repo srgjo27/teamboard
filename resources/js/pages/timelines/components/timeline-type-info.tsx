@@ -5,7 +5,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { IconInfoCircle } from '@tabler/icons-react';
-import { timelineTypeInfo } from '../constants';
+import { timelineTypeInfo } from '../constants/constants';
 
 export function TimelineTypeInfo() {
     const handleWheel = (e: React.WheelEvent) => {

@@ -16,12 +16,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Project, Timeline, TimelineFormData } from '@/types/timeline';
-import { router } from '@inertiajs/react';
+import { Project, Timeline } from '@/types/timeline';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useDeliverables } from '../hooks/use-deliverables';
+import { useExistingSprints } from '../hooks/use-existing-sprints';
+import { useTimelineForm } from '../hooks/use-timeline-form';
 import { TimelineTypeInfo } from './timeline-type-info';
 
 interface CreateTimelineDialogProps {
@@ -29,113 +30,35 @@ interface CreateTimelineDialogProps {
     timelines: Timeline[];
 }
 
-const initialFormData: TimelineFormData = {
-    project_id: '',
-    type: 'sprint',
-    phase: '',
-    title: '',
-    description: '',
-    start_date: '',
-    end_date: '',
-    status: 'pending',
-    sprint_number: '',
-    deliverables: [''],
-};
-
 export function CreateTimelineDialog({
     projects,
     timelines,
 }: CreateTimelineDialogProps) {
     const [open, setOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState<TimelineFormData>(initialFormData);
-    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const existingSprints = useMemo(() => {
-        if (!formData.project_id) return [];
-        const projectTimelines = timelines.filter(
-            (t) => t.project.id.toString() === formData.project_id,
-        );
-        const sprints = projectTimelines
-            .map((t) => t.sprint_number)
-            .filter((num): num is number => num !== null && num !== undefined);
-        return Array.from(new Set(sprints)).sort((a, b) => a - b);
-    }, [timelines, formData.project_id]);
+    const {
+        formData,
+        errors,
+        isSubmitting,
+        handleInputChange,
+        handleSubmit: submitForm,
+        resetForm,
+        setFormData,
+    } = useTimelineForm();
 
-    const handleInputChange = (field: string, value: any) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        if (errors[field]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
-            });
-        }
-    };
+    const existingSprints = useExistingSprints(timelines, formData.project_id);
 
-    const handleDeliverableChange = (index: number, value: string) => {
-        const newDeliverables = [...formData.deliverables];
-        newDeliverables[index] = value;
-        setFormData((prev) => ({ ...prev, deliverables: newDeliverables }));
-    };
-
-    const addDeliverable = () => {
-        setFormData((prev) => ({
-            ...prev,
-            deliverables: [...prev.deliverables, ''],
-        }));
-    };
-
-    const removeDeliverable = (index: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            deliverables: prev.deliverables.filter((_, i) => i !== index),
-        }));
-    };
+    const { handleDeliverableChange, addDeliverable, removeDeliverable } =
+        useDeliverables(formData.deliverables, setFormData);
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setErrors({});
-
-        const filteredDeliverables = formData.deliverables.filter(
-            (d) => d.trim() !== '',
-        );
-
-        const submitData: any = {
-            project_id: formData.project_id,
-            type: formData.type,
-            title: formData.title,
-            status: formData.status,
-        };
-
-        if (formData.phase) submitData.phase = formData.phase;
-        if (formData.description) submitData.description = formData.description;
-        if (formData.start_date) submitData.start_date = formData.start_date;
-        if (formData.end_date) submitData.end_date = formData.end_date;
-        if (formData.sprint_number)
-            submitData.sprint_number = parseInt(formData.sprint_number);
-        if (filteredDeliverables.length > 0)
-            submitData.deliverables = filteredDeliverables;
-
-        router.post('/timelines', submitData, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setOpen(false);
-                setFormData(initialFormData);
-                setIsSubmitting(false);
-            },
-            onError: (errors) => {
-                setErrors(errors as Record<string, string>);
-                setIsSubmitting(false);
-            },
-        });
+        submitForm(e, () => setOpen(false));
     };
 
     const handleClose = () => {
         if (!isSubmitting) {
             setOpen(false);
-            setErrors({});
+            resetForm();
         }
     };
 
@@ -157,8 +80,8 @@ export function CreateTimelineDialog({
                         Set up a new project with SDLC phases and timeline
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="flex flex-col">
-                    <div className="max-h-[calc(90vh-180px)] overflow-y-auto px-1">
+                <form onSubmit={handleSubmit}>
+                    <div className="max-h-[calc(90vh-180px)] -mx-4 overflow-y-auto px-4">
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="project">
@@ -508,9 +431,7 @@ export function CreateTimelineDialog({
                                 </div>
                             </div>
 
-                            <Separator />
-
-                            <div className="grid gap-3">
+                            <div className="grid gap-2">
                                 <div className="flex items-center justify-between">
                                     <Label>Deliverables</Label>
                                     <Button
@@ -563,7 +484,7 @@ export function CreateTimelineDialog({
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2 border-t pt-4">
+                    <div className="flex justify-end gap-2 pt-4">
                         <Button
                             type="button"
                             variant="outline"

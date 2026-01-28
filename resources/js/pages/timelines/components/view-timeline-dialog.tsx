@@ -15,7 +15,13 @@ import {
     IconFlag,
     IconListCheck,
 } from '@tabler/icons-react';
-import { phaseColors, statusColors, typeColors } from '../constants';
+import {
+    phaseColors,
+    phaseLabels,
+    statusColors,
+    typeLabels,
+} from '../constants/constants';
+import { useTimelineFormatting } from '../hooks/use-timeline-formatting';
 
 interface ViewTimelineDialogProps {
     timeline: Timeline | null;
@@ -23,64 +29,15 @@ interface ViewTimelineDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-const phaseLabels: Record<string, string> = {
-    planning: 'Planning',
-    backlog_refinement: 'Backlog Refinement',
-    analysis: 'Analysis',
-    design: 'Design',
-    development: 'Development',
-    testing: 'Testing',
-    code_review: 'Code Review',
-    deployment: 'Deployment',
-    release: 'Release',
-    retrospective: 'Retrospective',
-};
-
-const typeLabels: Record<string, string> = {
-    sprint: 'Sprint',
-    phase: 'Phase',
-    milestone: 'Milestone',
-    event: 'Event',
-};
-
 export function ViewTimelineDialog({
     timeline,
     open,
     onOpenChange,
 }: ViewTimelineDialogProps) {
+    const { formatDate, calculateDuration, phaseColor } =
+        useTimelineFormatting(timeline);
+
     if (!timeline) return null;
-
-    const phaseColor = timeline.phase
-        ? phaseColors[timeline.phase]
-        : typeColors[timeline.type];
-
-    const formatDate = (date: string | null) => {
-        if (!date) return '-';
-        return new Date(date).toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    };
-
-    const calculateDuration = () => {
-        if (!timeline.start_date || !timeline.end_date) return null;
-        const start = new Date(timeline.start_date);
-        const end = new Date(timeline.end_date);
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const weeks = Math.floor(diffDays / 7);
-        const days = diffDays % 7;
-
-        if (weeks > 0 && days > 0) {
-            return `${weeks} minggu ${days} hari`;
-        } else if (weeks > 0) {
-            return `${weeks} minggu`;
-        } else {
-            return `${days} hari`;
-        }
-    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

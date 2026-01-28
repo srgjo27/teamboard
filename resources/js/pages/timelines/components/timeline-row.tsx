@@ -11,10 +11,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Project, Timeline } from '@/types/timeline';
-import { router } from '@inertiajs/react';
 import { IconEdit, IconEye, IconTrash } from '@tabler/icons-react';
-import { useState } from 'react';
-import { phaseColors, statusColors, typeColors } from '../constants';
+import { phaseColors, statusColors, typeColors } from '../constants/constants';
+import { useTimelineDelete } from '../hooks/use-timeline-delete';
+import { useTimelineDialogs } from '../hooks/use-timeline-dialogs';
+import { useTimelinePosition } from '../hooks/use-timeline-position';
 import { EditTimelineDialog } from './edit-timeline-dialog';
 import { ViewTimelineDialog } from './view-timeline-dialog';
 
@@ -37,85 +38,29 @@ export function TimelineRow({
     viewStart,
     canActions,
 }: TimelineRowProps) {
-    const totalWeeks = 12;
-    const weekWidth = 100 / totalWeeks;
     const { project, timelines } = projectData;
-    const [editingTimeline, setEditingTimeline] = useState<Timeline | null>(
-        null,
-    );
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [viewingTimeline, setViewingTimeline] = useState<Timeline | null>(
-        null,
-    );
-    const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-    const [deletingTimeline, setDeletingTimeline] = useState<Timeline | null>(
-        null,
-    );
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleViewClick = (timeline: Timeline) => {
-        setViewingTimeline(timeline);
-        setIsViewDialogOpen(true);
-    };
+    const {
+        viewingTimeline,
+        isViewDialogOpen,
+        setIsViewDialogOpen,
+        handleViewClick,
+        editingTimeline,
+        isEditDialogOpen,
+        setIsEditDialogOpen,
+        handleEditClick,
+    } = useTimelineDialogs();
 
-    const handleEditClick = (timeline: Timeline) => {
-        setEditingTimeline(timeline);
-        setIsEditDialogOpen(true);
-    };
+    const {
+        deletingTimeline,
+        isDeleteDialogOpen,
+        isDeleting,
+        setIsDeleteDialogOpen,
+        handleDeleteClick,
+        handleDeleteConfirm,
+    } = useTimelineDelete();
 
-    const handleDeleteClick = (timeline: Timeline) => {
-        setDeletingTimeline(timeline);
-        setIsDeleteDialogOpen(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        if (!deletingTimeline) return;
-
-        setIsDeleting(true);
-        router.delete(`/timelines/${deletingTimeline.id}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setIsDeleteDialogOpen(false);
-                setDeletingTimeline(null);
-                setIsDeleting(false);
-            },
-            onError: () => {
-                setIsDeleting(false);
-            },
-        });
-    };
-
-    const getTimelinePosition = (timeline: Timeline) => {
-        if (!timeline.start_date || !timeline.end_date) return null;
-
-        const start = new Date(timeline.start_date);
-        const end = new Date(timeline.end_date);
-
-        const startWeek =
-            Math.max(
-                0,
-                Math.floor(
-                    (start.getTime() - viewStart.getTime()) /
-                        (7 * 24 * 60 * 60 * 1000),
-                ),
-            ) + 1;
-        const endWeek =
-            Math.min(
-                totalWeeks,
-                Math.ceil(
-                    (end.getTime() - viewStart.getTime()) /
-                        (7 * 24 * 60 * 60 * 1000),
-                ),
-            ) + 1;
-
-        const duration = Math.max(0.5, endWeek - startWeek);
-
-        return {
-            left: (startWeek - 1) * weekWidth,
-            width: duration * weekWidth,
-        };
-    };
+    const { getTimelinePosition, totalWeeks } = useTimelinePosition(viewStart);
 
     return (
         <div className="group border-b transition-colors last:border-b-0 hover:bg-muted/30">
@@ -175,17 +120,16 @@ export function TimelineRow({
                                         }
                                     >
                                         <div
-                                            className={`h-full rounded-md ${phaseColor} ${
-                                                timeline.status === 'completed'
-                                                    ? 'opacity-60'
+                                            className={`h-full rounded-md ${phaseColor} ${timeline.status === 'completed'
+                                                ? 'opacity-60'
+                                                : timeline.status ===
+                                                    'pending'
+                                                    ? 'opacity-40'
                                                     : timeline.status ===
-                                                        'pending'
-                                                      ? 'opacity-40'
-                                                      : timeline.status ===
-                                                          'delayed'
+                                                        'delayed'
                                                         ? 'opacity-70 ring-2 ring-red-500'
                                                         : 'opacity-90'
-                                            } flex items-center justify-center px-2`}
+                                                } flex items-center justify-center px-2`}
                                         >
                                             <span className="truncate text-xs font-medium text-white">
                                                 {timeline.title}
