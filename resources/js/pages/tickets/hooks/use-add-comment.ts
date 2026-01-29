@@ -26,7 +26,7 @@ export function useAddComment({ ticketId, onSuccess }: UseAddCommentProps) {
             formData.append('attachments[]', file);
         });
 
-        router.post(`/tikets/${ticketId}/comments`, formData, {
+        router.post(`/tickets/${ticketId}/comments`, formData, {
             preserveScroll: true,
             onSuccess: () => {
                 setComment('');

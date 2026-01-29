@@ -63,7 +63,7 @@ class TicketController extends Controller
                 ->get();
         });
 
-        return Inertia::render('tikets/page', [
+        return Inertia::render('tickets/page', [
             'tickets' => $tickets,
             'projects' => $projects,
             'timelines' => $timelines,

@@ -20,25 +20,22 @@ import { useTicketFilter } from './hooks/use-ticket-filter';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Tikets',
+        title: 'Tickets',
         href: '#',
     },
 ];
 
-export default function TiketsPage({
+export default function TicketsPage({
     tickets,
     projects,
     timelines,
 }: TicketPageProps) {
-    const {
-        stats,
-        handleProjectChange,
-        handleSearchChange,
-    } = useTicketFilter(tickets);
+    const { stats, handleProjectChange, handleSearchChange } =
+        useTicketFilter(tickets);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tikets" />
+            <Head title="Tickets" />
 
             <div className="p-6">
                 {/* Header */}
@@ -54,9 +51,7 @@ export default function TiketsPage({
 
                     <div className="flex flex-wrap items-center gap-2">
                         {/* Project Filter */}
-                        <Select
-                            onValueChange={handleProjectChange}
-                        >
+                        <Select onValueChange={handleProjectChange}>
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Select project" />
                             </SelectTrigger>

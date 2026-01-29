@@ -410,7 +410,7 @@ export default function Dashboard() {
                                         </CardDescription>
                                     </div>
                                     <Button variant="ghost" size="sm" asChild>
-                                        <Link href="/tikets">
+                                        <Link href="/tickets">
                                             View All
                                             <IconArrowRight className="ml-2 h-4 w-4" />
                                         </Link>

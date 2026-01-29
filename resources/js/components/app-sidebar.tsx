@@ -12,37 +12,29 @@ import {
 } from '@/components/ui/sidebar';
 import {
     analytics,
-    dashboard,
     manageUsers,
     notifications,
     projects,
     teams,
-    tikets,
+    tickets,
     timelines,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Bell,
-    BellDot,
     BookOpen,
     Calendar,
     ChartArea,
     Folder,
     FolderRoot,
     Handshake,
-    LayoutGrid,
     Tickets,
     Users,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Board',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
     {
         title: 'Analytics',
         href: analytics(),
@@ -54,8 +46,8 @@ const mainNavItems: NavItem[] = [
         icon: FolderRoot,
     },
     {
-        title: 'Tikets',
-        href: tikets(),
+        title: 'Tickets',
+        href: tickets(),
         icon: Tickets,
     },
     {
@@ -111,7 +103,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={analytics()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

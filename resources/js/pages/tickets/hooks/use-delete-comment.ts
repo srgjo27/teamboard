@@ -9,7 +9,7 @@ export function useDeleteComment(commentId: number) {
 
         setIsDeleting(true);
 
-        router.delete(`/tikets/comments/${commentId}`, {
+        router.delete(`/tickets/comments/${commentId}`, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsDeleting(false);

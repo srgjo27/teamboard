@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
 import { Ticket } from '@/types/ticket';
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface UseAssignQaProps {
     ticket: Ticket;
@@ -9,7 +9,7 @@ interface UseAssignQaProps {
 
 export function useAssignQa({ ticket, onSuccess }: UseAssignQaProps) {
     const [selectedQaId, setSelectedQaId] = useState(
-        ticket.qa_assigned_user?.id.toString() || ''
+        ticket.qa_assigned_user?.id.toString() || '',
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -22,7 +22,7 @@ export function useAssignQa({ ticket, onSuccess }: UseAssignQaProps) {
         setIsSubmitting(true);
 
         router.put(
-            `/tikets/${ticket.id}`,
+            `/tickets/${ticket.id}`,
             { qa_assigned_to: parseInt(selectedQaId) },
             {
                 preserveScroll: true,
@@ -33,7 +33,7 @@ export function useAssignQa({ ticket, onSuccess }: UseAssignQaProps) {
                 onError: () => {
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 

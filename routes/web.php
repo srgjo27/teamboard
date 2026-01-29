@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TeamController;
@@ -18,26 +19,20 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-
-    Route::get('analytics', function () {
-        return Inertia::render('analytics/page');
-    })->name('analytics');
+    Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics');
 
     Route::get('projects', [ProjectController::class, 'index'])->name('projects');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
 
-    Route::get('tikets', [TicketController::class, 'index'])->name('tikets');
-    Route::post('tikets', [TicketController::class, 'store'])->name('tikets.store');
-    Route::put('tikets/{ticket}', [TicketController::class, 'update'])->name('tikets.update');
-    Route::delete('tikets/{ticket}', [TicketController::class, 'destroy'])->name('tikets.destroy');
+    Route::get('tickets', [TicketController::class, 'index'])->name('tickets');
+    Route::post('tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+    Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
 
-    Route::post('tikets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('tikets.comments.store');
-    Route::put('tikets/comments/{comment}', [TicketCommentController::class, 'update'])->name('tikets.comments.update');
-    Route::delete('tikets/comments/{comment}', [TicketCommentController::class, 'destroy'])->name('tikets.comments.destroy');
+    Route::post('tickets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('tickets.comments.store');
+    Route::put('tickets/comments/{comment}', [TicketCommentController::class, 'update'])->name('tickets.comments.update');
+    Route::delete('tickets/comments/{comment}', [TicketCommentController::class, 'destroy'])->name('tickets.comments.destroy');
 
     Route::get('timelines', [TimelineController::class, 'index'])->name('timelines');
     Route::post('timelines', [TimelineController::class, 'store'])->name('timelines.store');

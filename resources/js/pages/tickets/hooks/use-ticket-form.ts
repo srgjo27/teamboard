@@ -39,9 +39,7 @@ export function useTicketForm({ ticket }: UseTicketFormProps = {}) {
                 priority: ticket.priority,
                 status: ticket.status,
                 assigned_to: ticket.assigned_to?.toString() || '',
-                due_date: ticket.due_date
-                    ? ticket.due_date.split('T')[0]
-                    : '',
+                due_date: ticket.due_date ? ticket.due_date.split('T')[0] : '',
                 estimated_hours: ticket.estimated_hours?.toString() || '',
                 story_points: ticket.story_points?.toString() || '',
                 tags: ticket.tags || [],
@@ -94,21 +92,30 @@ export function useTicketForm({ ticket }: UseTicketFormProps = {}) {
             submitData.estimated_hours = formData.estimated_hours || null;
             submitData.story_points = formData.story_points || null;
             submitData.tags = formData.tags;
-            const newAttachments = formData.attachments.filter((a: any) => a instanceof File);
+            const newAttachments = formData.attachments.filter(
+                (a: any) => a instanceof File,
+            );
             if (newAttachments.length) submitData.attachments = newAttachments;
         } else {
-            if (formData.timeline_id) submitData.timeline_id = formData.timeline_id;
-            if (formData.description) submitData.description = formData.description;
+            if (formData.timeline_id)
+                submitData.timeline_id = formData.timeline_id;
+            if (formData.description)
+                submitData.description = formData.description;
             if (formData.status) submitData.status = formData.status;
-            if (formData.assigned_to) submitData.assigned_to = formData.assigned_to;
+            if (formData.assigned_to)
+                submitData.assigned_to = formData.assigned_to;
             if (formData.due_date) submitData.due_date = formData.due_date;
-            if (formData.estimated_hours) submitData.estimated_hours = formData.estimated_hours;
-            if (formData.story_points) submitData.story_points = formData.story_points;
-            if (formData.tags && formData.tags.length > 0) submitData.tags = formData.tags;
-            if (formData.attachments && formData.attachments.length > 0) submitData.attachments = formData.attachments;
+            if (formData.estimated_hours)
+                submitData.estimated_hours = formData.estimated_hours;
+            if (formData.story_points)
+                submitData.story_points = formData.story_points;
+            if (formData.tags && formData.tags.length > 0)
+                submitData.tags = formData.tags;
+            if (formData.attachments && formData.attachments.length > 0)
+                submitData.attachments = formData.attachments;
         }
 
-        const url = isEditMode ? `/tikets/${ticket!.id}` : '/tikets';
+        const url = isEditMode ? `/tickets/${ticket!.id}` : '/tickets';
         const method = isEditMode ? 'put' : 'post';
 
         router[method](url, submitData, {

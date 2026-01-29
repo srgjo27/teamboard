@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
 import { Ticket } from '@/types/ticket';
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface UseMoveStatusProps {
     ticket: Ticket;
@@ -20,7 +20,7 @@ export function useMoveStatus({ ticket, onSuccess }: UseMoveStatusProps) {
         setIsSubmitting(true);
 
         router.put(
-            `/tikets/${ticket.id}`,
+            `/tickets/${ticket.id}`,
             { status: selectedStatus },
             {
                 preserveScroll: true,
@@ -31,11 +31,12 @@ export function useMoveStatus({ ticket, onSuccess }: UseMoveStatusProps) {
                 onError: () => {
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 
-    const canSubmit = !isSubmitting && selectedStatus && selectedStatus !== ticket.status;
+    const canSubmit =
+        !isSubmitting && selectedStatus && selectedStatus !== ticket.status;
 
     return {
         selectedStatus,

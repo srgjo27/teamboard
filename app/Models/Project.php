@@ -41,33 +41,21 @@ class Project extends Model
         'end_date' => 'date',
     ];
 
-    /**
-     * Get the team that works on this project.
-     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    /**
-     * Get the project manager who leads this project.
-     */
     public function projectManager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'project_manager_id');
     }
 
-    /**
-     * Get the user who created this project.
-     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the timelines for the project.
-     */
     public function timelines(): HasMany
     {
         return $this->hasMany(ProjectTimeline::class);

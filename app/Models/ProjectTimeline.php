@@ -42,20 +42,18 @@ class ProjectTimeline extends Model
         'deliverables' => 'array',
     ];
 
-    /**
-     * Get the project that owns the timeline.
-     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    /**
-     * Get the user who created this timeline.
-     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'timeline_id');
+    }
 }

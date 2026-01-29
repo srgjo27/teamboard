@@ -1,6 +1,6 @@
+import { TicketComment } from '@/types/ticket';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
-import { TicketComment } from '@/types/ticket';
 
 export function useEditComment(comment: TicketComment) {
     const [isEditing, setIsEditing] = useState(false);
@@ -14,7 +14,7 @@ export function useEditComment(comment: TicketComment) {
         setIsSubmitting(true);
 
         router.put(
-            `/tikets/comments/${comment.id}`,
+            `/tickets/comments/${comment.id}`,
             {
                 comment: editedComment,
                 is_internal: isInternal,
@@ -28,7 +28,7 @@ export function useEditComment(comment: TicketComment) {
                 onError: () => {
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 
