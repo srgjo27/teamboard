@@ -1,13 +1,13 @@
 # Teamboard
 
-Teamboard is a modern Project Management Application designed to streamline team collaboration, task tracking, and performance analytics. Built with the latest web technologies, it offers a seamless and responsive user experience.
+Teamboard is a modern Project Management Application designed to streamline team collaboration, task tracking, and performance analytics. **Inspired by Jira**, this project serves as a "Lite" version, focusing on essential agile features while offering a more streamlined and modern user experience. Built with the latest web technologies, it allows teams to manage workflows efficiently without the complexity of enterprise-grade tools.
 
 ![Teamboard Dashboard](public/screenshots/projects.png)
 
 ## 🚀 Key Features
 
 *   **Project & Task Management**: Create projects, assign tasks, and track progress with intuitive boards and lists.
-*   **Team Collaboration**: Manage team members, roles (Product Owner, Scrum Master, Developer), and permissions.
+*   **Team Collaboration**: Manage team members, roles (Product Owner, Scrum Master, Product Manager, Team Dev (Frontend, Backend, Fullstack, QA), UI/UX Designer), and permissions.
 *   **AI-Powered Analytics**: Generate intelligent insights on project health and team performance using Google Gemini AI.
 *   **Interactive Timelines**: Visualize project roadmaps and deadlines.
 *   **Real-time Updates**: Stay in sync with your team.
@@ -24,6 +24,7 @@ This project leverages a robust and modern technology stack:
 
 ### Frontend
 *   **[React 19](https://react.dev)**: The library for web and native user interfaces.
+*   **[TypeScript](https://www.typescriptlang.org)**: Strongly typed programming language that builds on JavaScript.
 *   **[Tailwind CSS 4.0](https://tailwindcss.com)**: A utility-first CSS framework for rapid UI development.
 *   **[Shadcn/ui](https://ui.shadcn.com)**: Reusable components built with Radix UI and Tailwind CSS.
 *   **[Recharts](https://recharts.org)**: Composable charting library for React.
@@ -43,7 +44,7 @@ Follow these steps to set up the project locally:
 
 1.  **Clone the Repository**
     ```bash
-    git clone https://github.com/yourusername/teamboard.git
+    git clone https://github.com/srgjo27/teamboard.git
     cd teamboard
     ```
 
