@@ -33,6 +33,11 @@ export default function AddMemberDialog({
 }: AddMemberDialogProps) {
     const [open, setOpen] = useState(false);
 
+    const restrictedRoles = ['admin', 'product_owner', 'scrum_master'];
+    const filteredUsers = availableUsers.filter(
+        (user) => !user.role || !restrictedRoles.includes(user.role.name)
+    );
+
     const { data, setData, post, processing, errors, reset } = useForm({
         user_id: '',
     });
@@ -90,7 +95,7 @@ export default function AddMemberDialog({
                                 >
                                     <SelectValue placeholder="Choose a user...">
                                         {data.user_id
-                                            ? availableUsers.find(
+                                            ? filteredUsers.find(
                                                 (u) =>
                                                     u.id.toString() ===
                                                     data.user_id,
@@ -99,8 +104,8 @@ export default function AddMemberDialog({
                                     </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {availableUsers.length > 0 ? (
-                                        availableUsers.map((user) => (
+                                    {filteredUsers.length > 0 ? (
+                                        filteredUsers.map((user) => (
                                             <SelectItem
                                                 key={user.id}
                                                 value={user.id.toString()}
@@ -129,8 +134,7 @@ export default function AddMemberDialog({
                                         ))
                                     ) : (
                                         <div className="p-2 text-sm text-muted-foreground">
-                                            All users are already members of
-                                            this team
+                                            No eligible users found to add.
                                         </div>
                                     )}
                                 </SelectContent>
@@ -153,7 +157,7 @@ export default function AddMemberDialog({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={processing || availableUsers.length === 0}
+                            disabled={processing || filteredUsers.length === 0}
                         >
                             {processing ? 'Adding...' : 'Add Member'}
                         </Button>

@@ -2,6 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { AnalyticsPageProps } from '@/types/analytics';
 import { Head } from '@inertiajs/react';
+import { AIInsights } from './components/ai-insights';
 import { OverviewStatsCards } from './components/overview-stats';
 import { TeamPerformanceTable } from './components/team-performance-table';
 import { TeamWorkloadChart } from './components/team-workload-chart';
@@ -36,6 +37,9 @@ export default function AnalyticsPage({ analytics }: AnalyticsPageProps) {
 
                 {/* Overview Stats */}
                 <OverviewStatsCards stats={analytics.overview} />
+
+                {/* AI Insights */}
+                <AIInsights />
 
                 {/* Ticket Analytics Section */}
                 <div>

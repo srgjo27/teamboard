@@ -20,6 +20,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    Route::post('analytics/ai-analysis', [AnalyticsController::class, 'generateAIAnalysis'])->name('analytics.ai-analysis');
 
     Route::get('projects', [ProjectController::class, 'index'])->name('projects');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');

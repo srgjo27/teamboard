@@ -230,4 +230,52 @@ class AnalyticsController extends Controller
             'userActivity' => $userActivity,
         ];
     }
+    public function generateAIAnalysis()
+    {
+        $data = [
+            'overview' => $this->getOverviewStats(),
+            'tickets' => $this->getTicketAnalytics(),
+            'teams' => $this->getTeamPerformance(),
+            'users' => $this->getUserProductivity(),
+        ];
+
+        $aiData = [
+            'overview' => $data['overview'],
+            'tickets' => $data['tickets'],
+            'teams' => $data['teams'],
+            'users' => [
+                'topContributors' => $data['users']['topContributors'],
+                'byRole' => $data['users']['byRole'],
+                'userActivity' => array_slice($data['users']['userActivity']->toArray(), 0, 20),
+            ],
+        ];
+
+        try {
+            $prompt = "You are an expert Project Manager AI. Analyze the following project management data and provide key insights.
+            Focus on:
+            1. Overall Project Health
+            2. High Performing Teams/Individuals
+            3. Critical Bottlenecks (High priority tickets, delayed timelines)
+            4. Recommendations for improvement
+            
+            Keep the response professional, concise, and formatted in Markdown.
+            
+            Data: " . json_encode($aiData);
+
+            $apiKey = env('GEMINI_API_KEY');
+            if (!$apiKey) {
+                return response()->json(['error' => 'Google API Key not configured'], 500);
+            }
+
+            $client = \Gemini::client($apiKey);
+            $result = $client->generativeModel('models/gemini-flash-latest')->generateContent($prompt);
+
+            return response()->json([
+                'analysis' => $result->text()
+            ]);
+        } catch (\Exception $e) {
+            $statusCode = str_contains($e->getMessage(), '429') || str_contains($e->getMessage(), 'Quota') ? 429 : 500;
+            return response()->json(['error' => 'Failed to generate analysis: ' . $e->getMessage()], $statusCode);
+        }
+    }
 }
