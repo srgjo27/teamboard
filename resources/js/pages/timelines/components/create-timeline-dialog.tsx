@@ -106,15 +106,21 @@ export function CreateTimelineDialog({
                                         <SelectValue placeholder="Select project" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {projects.map((project) => (
-                                            <SelectItem
-                                                key={project.id}
-                                                value={project.id.toString()}
-                                            >
-                                                {project.name} (
-                                                {project.team.name})
+                                        {projects.length === 0 ? (
+                                            <SelectItem value="no_projects" disabled>
+                                                No active projects available
                                             </SelectItem>
-                                        ))}
+                                        ) : (
+                                            projects.map((project) => (
+                                                <SelectItem
+                                                    key={project.id}
+                                                    value={project.id.toString()}
+                                                >
+                                                    {project.name} (
+                                                    {project.team.name})
+                                                </SelectItem>
+                                            ))
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 {errors.project_id && (

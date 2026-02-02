@@ -184,7 +184,12 @@ class AnalyticsController extends Controller
 
     private function getUserProductivity()
     {
+        $excludedRoles = ['admin', 'product_owner', 'scrum_master', 'product_manager'];
+
         $topContributors = Ticket::where('status', 'done')
+            ->whereHas('assignedUser.role', function ($q) use ($excludedRoles) {
+                $q->whereNotIn('name', $excludedRoles);
+            })
             ->with('assignedUser:id,name')
             ->whereNotNull('assigned_to')
             ->select('assigned_to', DB::raw('count(*) as completed'))
@@ -197,7 +202,10 @@ class AnalyticsController extends Controller
                 'completed' => $item->completed,
             ]);
 
-        $byRole = User::with('role:id,name,display_name')
+        $byRole = User::whereHas('role', function ($q) use ($excludedRoles) {
+                $q->whereNotIn('name', $excludedRoles);
+            })
+            ->with('role:id,name,display_name')
             ->get()
             ->groupBy('role.display_name')
             ->map(fn($users, $role) => [
@@ -206,7 +214,10 @@ class AnalyticsController extends Controller
             ])
             ->values();
 
-        $userActivity = User::with('role:id,display_name')
+        $userActivity = User::whereHas('role', function ($q) use ($excludedRoles) {
+                $q->whereNotIn('name', $excludedRoles);
+            })
+            ->with('role:id,display_name')
             ->get()
             ->map(function ($user) {
                 $assigned = Ticket::where('assigned_to', $user->id)->count();

@@ -23,6 +23,9 @@ class TimelineController extends Controller
                 'project.team:id,name,color',
                 'creator:id,name'
             ])
+                ->whereHas('project', function ($q) {
+                    $q->whereNotIn('status', ['cancelled', 'completed']);
+                })
                 ->select(
                     'id',
                     'project_id',
@@ -71,7 +74,7 @@ class TimelineController extends Controller
         $projects = Cache::remember('projects.for-timelines', 600, function () {
             return Project::with('team:id,name,color')
                 ->select('id', 'name', 'status', 'team_id')
-                ->where('status', '!=', 'cancelled')
+                ->whereNotIn('status', ['cancelled', 'completed'])
                 ->orderBy('name')
                 ->get();
         });

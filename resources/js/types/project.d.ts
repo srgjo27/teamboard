@@ -18,10 +18,13 @@ export interface Project {
     };
     creator: string;
     created_at: string;
+    updated_at?: string;
     file_path: string | null;
     file_name: string | null;
     image_path: string | null;
     image_name: string | null;
+    tickets?: import('./ticket').Ticket[];
+    timelines?: import('./timeline').Timeline[];
 }
 
 export interface Team {

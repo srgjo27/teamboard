@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { analytics } from '@/routes';
 import { Head, Link } from '@inertiajs/react';
 import { IconShieldLock } from '@tabler/icons-react';
 
@@ -40,7 +40,7 @@ export default function Error403() {
 
                         <div className="flex justify-center gap-2">
                             <Button asChild>
-                                <Link href={dashboard()}>
+                                <Link href={analytics()}>
                                     Back to Dashboard
                                 </Link>
                             </Button>

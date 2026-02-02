@@ -56,6 +56,11 @@ class Project extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
     public function timelines(): HasMany
     {
         return $this->hasMany(ProjectTimeline::class);

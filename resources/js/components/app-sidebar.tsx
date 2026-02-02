@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 import {
     analytics,
+    archive,
     manageUsers,
     notifications,
     projects,
@@ -26,7 +27,7 @@ import {
     BookOpen,
     Calendar,
     ChartArea,
-    Folder,
+    FolderArchive,
     FolderRoot,
     Handshake,
     Tickets,
@@ -74,9 +75,9 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Archive',
+        href: archive(),
+        icon: FolderArchive,
     },
     {
         title: 'Documentation',

@@ -44,10 +44,14 @@ class TicketController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $tickets = $query->orderBy('created_at', 'desc')->get();
+        $tickets = $query->whereHas('project', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'completed']);
+            })
+            ->orderBy('created_at', 'desc')->get();
 
         $projects = Project::with(['team.users:id,name'])
             ->select('id', 'name', 'status', 'team_id')
+            ->whereNotIn('status', ['cancelled', 'completed'])
             ->orderBy('name')
             ->get();
 
