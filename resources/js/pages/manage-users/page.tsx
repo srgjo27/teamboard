@@ -37,11 +37,20 @@ interface PaginatedUsers {
 interface ManageUsersProps {
     users: PaginatedUsers;
     roles: Array<{ id: number; name: string; display_name: string }>;
+    stats: {
+        total: number;
+        admins: number;
+        roles: number;
+    };
 }
 
-export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
-    const { auth } = usePage().props as any;
+export default function ManageUsersPage({ users, roles, stats }: ManageUsersProps) {
+    const { auth, ziggy } = usePage().props as any;
     const currentUserId = auth?.user?.id;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSearch = urlParams.get('search') || '';
+    const initialRole = urlParams.get('role') || 'all';
 
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [addUserOpen, setAddUserOpen] = useState(false);
@@ -54,11 +63,7 @@ export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
         setSearchQuery,
         selectedRole,
         setSelectedRole,
-        filteredUsers,
-        uniqueRoles,
-    } = useUserFilters(users.data);
-
-    const stats = useUserStats(users.data, uniqueRoles);
+    } = useUserFilters(initialSearch, initialRole);
 
     const handleAddUser = () => {
         setAddUserOpen(true);
@@ -102,16 +107,16 @@ export default function ManageUsersPage({ users, roles }: ManageUsersProps) {
                                 onSearchChange={setSearchQuery}
                                 selectedRole={selectedRole}
                                 onRoleChange={setSelectedRole}
-                                uniqueRoles={uniqueRoles}
-                                users={users.data}
+                                roles={roles}
                             />
                         </div>
                     </CardHeader>
 
                     <CardContent>
                         <UserTable
-                            users={filteredUsers}
+                            users={users.data}
                             currentUserId={currentUserId}
+                            startIndex={(users.current_page - 1) * users.per_page}
                             onEditUser={handleEditUser}
                             onChangeRole={handleChangeRole}
                             onDeleteUser={handleDeleteUser}

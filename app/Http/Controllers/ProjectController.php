@@ -26,6 +26,7 @@ class ProjectController extends Controller
                 'projectManager:id,name',
                 'creator:id,name'
             ])
+                ->whereIn('status', ['planning', 'in_progress', 'on_hold'])
                 ->select(
                     'id',
                     'name',
@@ -203,11 +204,11 @@ class ProjectController extends Controller
             if ($project->file_path) {
                 Storage::disk('public')->delete($project->file_path);
             }
-            
+
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('projects/files', $fileName, 'public');
-            
+
             $updateData['file_path'] = $filePath;
             $updateData['file_name'] = $fileName;
         }
@@ -216,11 +217,11 @@ class ProjectController extends Controller
             if ($project->image_path) {
                 Storage::disk('public')->delete($project->image_path);
             }
-            
+
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $imagePath = $image->storeAs('projects/images', $imageName, 'public');
-            
+
             $updateData['image_path'] = $imagePath;
             $updateData['image_name'] = $imageName;
         }

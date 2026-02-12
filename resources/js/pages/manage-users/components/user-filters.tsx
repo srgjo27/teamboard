@@ -6,7 +6,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { User } from '@/types/user';
 import { IconSearch } from '@tabler/icons-react';
 
 interface UserFiltersProps {
@@ -14,8 +13,7 @@ interface UserFiltersProps {
     onSearchChange: (value: string) => void;
     selectedRole: string;
     onRoleChange: (value: string) => void;
-    uniqueRoles: (string | undefined)[];
-    users: User[];
+    roles: Array<{ id: number; name: string; display_name: string }>;
 }
 
 export function UserFilters({
@@ -23,8 +21,7 @@ export function UserFilters({
     onSearchChange,
     selectedRole,
     onRoleChange,
-    uniqueRoles,
-    users,
+    roles,
 }: UserFiltersProps) {
     return (
         <div className="flex flex-wrap items-center gap-2">
@@ -46,11 +43,9 @@ export function UserFilters({
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
-                    {uniqueRoles.map((role) => (
-                        <SelectItem key={role} value={role!}>
-                            {users
-                                .find((u) => u.role?.name === role)
-                                ?.role?.display_name?.replace(/ /g, ' ')}
+                    {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.name}>
+                            {role.display_name}
                         </SelectItem>
                     ))}
                 </SelectContent>

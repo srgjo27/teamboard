@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -69,15 +70,15 @@ export function CreateProjectDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+            <DialogContent className="max-w-2xl flex flex-col max-h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>Create New Project</DialogTitle>
                     <DialogDescription>
                         Set up a new project with team and timeline
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto -mx-4 p-4">
+                    <div className="grid gap-6">
                         <div className="grid gap-2">
                             <Label htmlFor="project-name">
                                 Project Name{' '}
@@ -390,24 +391,28 @@ export function CreateProjectDialog({
                             </p>
                         </div>
                     </div>
-
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                                reset();
-                                onOpenChange(false);
-                            }}
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Creating...' : 'Create Project'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            reset();
+                            onOpenChange(false);
+                        }}
+                        disabled={processing}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        onClick={handleSubmit}
+                    >
+                        {processing ? 'Creating...' : 'Create Project'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

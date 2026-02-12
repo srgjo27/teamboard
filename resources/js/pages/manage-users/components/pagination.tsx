@@ -6,7 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import {
     IconChevronLeft,
     IconChevronRight,
@@ -68,9 +68,20 @@ export function Pagination({ pagination }: PaginationProps) {
                         value={per_page.toString()}
                         onValueChange={(value) => {
                             const url = new URL(window.location.href);
-                            url.searchParams.set('per_page', value);
-                            url.searchParams.delete('page');
-                            window.location.href = url.toString();
+                            const params: Record<string, string> = {};
+                            
+                            url.searchParams.forEach((val, key) => {
+                                if (key !== 'page') {
+                                    params[key] = val;
+                                }
+                            });
+                            
+                            params.per_page = value;
+                            
+                            router.get('/manage-users', params, {
+                                preserveState: true,
+                                preserveScroll: true,
+                            });
                         }}
                     >
                         <SelectTrigger className="h-8 w-16">

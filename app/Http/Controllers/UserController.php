@@ -19,11 +19,28 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         $perPage = $request->get('per_page', 10);
-        
-        $users = User::with('role')
-            ->select('id', 'name', 'email', 'role_id', 'created_at')
-            ->latest()
+        $search = $request->get('search');
+        $role = $request->get('role');
+
+        $query = User::with('role')
+            ->select('id', 'name', 'email', 'role_id', 'created_at');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($role && $role !== 'all') {
+            $query->whereHas('role', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
+        }
+
+        $users = $query->latest()
             ->paginate($perPage)
+            ->withQueryString()
             ->through(function ($user) {
                 return [
                     'id' => $user->id,
@@ -42,9 +59,18 @@ class UserController extends Controller
             return Role::all(['id', 'name', 'display_name']);
         });
 
+        $stats = [
+            'total' => User::count(),
+            'admins' => User::whereHas('role', function ($q) {
+                $q->where('name', 'admin');
+            })->count(),
+            'roles' => Role::count(),
+        ];
+
         return Inertia::render('manage-users/page', [
             'users' => $users,
-            'roles' => $roles
+            'roles' => $roles,
+            'stats' => $stats
         ]);
     }
 
@@ -98,7 +124,7 @@ class UserController extends Controller
         ]);
 
         $oldRole = $user->role?->display_name ?? 'No Role';
-        
+
         $user->update([
             'role_id' => $validated['role_id']
         ]);

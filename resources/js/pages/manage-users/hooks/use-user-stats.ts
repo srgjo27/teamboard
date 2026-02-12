@@ -3,13 +3,13 @@ import { useMemo } from 'react';
 
 export function useUserStats(
     users: User[],
-    uniqueRoles: (string | undefined)[],
+    roles: Array<{ id: number; name: string; display_name: string }>,
 ) {
     return useMemo(() => {
         return {
             total: users.length,
             admins: users.filter((u) => u.role?.name === 'admin').length,
-            roles: uniqueRoles.length,
+            roles: roles.length,
         };
-    }, [users, uniqueRoles]);
+    }, [users, roles]);
 }

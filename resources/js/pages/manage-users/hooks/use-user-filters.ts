@@ -1,33 +1,33 @@
-import { User } from '@/types/user';
-import { useMemo, useState } from 'react';
+import { router } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 
-export function useUserFilters(users: User[]) {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedRole, setSelectedRole] = useState<string>('all');
+export function useUserFilters(initialSearch = '', initialRole = 'all') {
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
+    const [selectedRole, setSelectedRole] = useState<string>(initialRole);
 
-    const filteredUsers = useMemo(() => {
-        return users.filter((user) => {
-            const matchSearch =
-                searchQuery === '' ||
-                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchRole =
-                selectedRole === 'all' || user.role?.name === selectedRole;
-            return matchSearch && matchRole;
-        });
-    }, [users, searchQuery, selectedRole]);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            router.get(
+                '/manage-users',
+                {
+                    search: searchQuery || undefined,
+                    role: selectedRole !== 'all' ? selectedRole : undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    only: ['users'],
+                }
+            );
+        }, 300);
 
-    const uniqueRoles = useMemo(() => {
-        const roles = new Set(users.map((u) => u.role?.name).filter(Boolean));
-        return Array.from(roles);
-    }, [users]);
+        return () => clearTimeout(timer);
+    }, [searchQuery, selectedRole]);
 
     return {
         searchQuery,
         setSearchQuery,
         selectedRole,
         setSelectedRole,
-        filteredUsers,
-        uniqueRoles,
     };
 }
