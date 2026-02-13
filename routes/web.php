@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('teams', [TeamController::class, 'index'])->name('teams');
     Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
     Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+    Route::delete('teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');
     Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.add-member');
     Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.remove-member');
 
@@ -64,4 +65,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('archive', [ArchiveController::class, 'index'])->name('archive');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

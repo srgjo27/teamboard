@@ -174,4 +174,28 @@ class TeamController extends Controller
 
         return back()->with('success', 'Member removed successfully!');
     }
+
+    /**
+     * Remove the specified team.
+     */
+    public function destroy(Request $request, Team $team): RedirectResponse
+    {
+        $allowedRoles = ['product_owner', 'scrum_master', 'product_manager', 'admin'];
+        $userRole = $request->user()->role->name ?? null;
+
+        if (!in_array($userRole, $allowedRoles)) {
+            return back()->withErrors([
+                'message' => 'You do not have permission to delete teams.',
+            ]);
+        }
+
+        $team->users()->detach();
+
+        $teamName = $team->name;
+        $team->delete();
+
+        Cache::forget('teams.index');
+
+        return back()->with('success', "Team '{$teamName}' deleted successfully!");
+    }
 }
