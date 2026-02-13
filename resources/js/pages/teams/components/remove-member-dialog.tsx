@@ -50,7 +50,7 @@ export default function RemoveMemberDialog({
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Remove Team Member</DialogTitle>
                     <DialogDescription>

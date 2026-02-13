@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -18,10 +19,9 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Team } from '@/types/team';
-import { User } from '@/types/user';
-import { useForm, usePage } from '@inertiajs/react';
 import { IconEdit } from '@tabler/icons-react';
-import { FormEventHandler, ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
+import { useEditTeam } from '../hooks/use-edit-team';
 
 interface EditTeamDialogProps {
     team: Team;
@@ -29,29 +29,17 @@ interface EditTeamDialogProps {
 }
 
 export default function EditTeamDialog({ team, trigger }: EditTeamDialogProps) {
-    const [open, setOpen] = useState(false);
-    const { allUsers } = usePage<{ allUsers: User[] }>().props;
-
-    const productManagers = allUsers.filter(
-        (user) => user.role?.name === 'product_manager',
-    );
-
-    const { data, setData, put, processing, errors, reset } = useForm({
-        name: team.name,
-        description: team.description || '',
-        color: team.color,
-        product_manager_id: team.product_manager?.id?.toString() || '',
-    });
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        put(`/teams/${team.id}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setOpen(false);
-            },
-        });
-    };
+    const {
+        open,
+        setOpen,
+        productManagers,
+        data,
+        setData,
+        processing,
+        errors,
+        handleSubmit,
+        handleClose,
+    } = useEditTeam(team);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -193,23 +181,25 @@ export default function EditTeamDialog({ team, trigger }: EditTeamDialogProps) {
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                                reset();
-                                setOpen(false);
-                            }}
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={processing}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        onClick={handleSubmit}
+                    >
+                        {processing ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

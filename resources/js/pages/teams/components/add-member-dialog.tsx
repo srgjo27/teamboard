@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -16,9 +17,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { User } from '@/types/user';
-import { useForm } from '@inertiajs/react';
 import { IconUserPlus } from '@tabler/icons-react';
-import { FormEventHandler, ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
+import { useAddMember } from '../hooks/use-add-member';
 
 interface AddMemberDialogProps {
     teamId: number;
@@ -31,27 +32,17 @@ export default function AddMemberDialog({
     availableUsers,
     trigger,
 }: AddMemberDialogProps) {
-    const [open, setOpen] = useState(false);
-
-    const restrictedRoles = ['admin', 'product_owner', 'scrum_master'];
-    const filteredUsers = availableUsers.filter(
-        (user) => !user.role || !restrictedRoles.includes(user.role.name)
-    );
-
-    const { data, setData, post, processing, errors, reset } = useForm({
-        user_id: '',
-    });
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post(`/teams/${teamId}/members`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                reset();
-                setOpen(false);
-            },
-        });
-    };
+    const {
+        open,
+        setOpen,
+        filteredUsers,
+        data,
+        setData,
+        processing,
+        errors,
+        handleSubmit,
+        handleClose,
+    } = useAddMember(teamId, availableUsers);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -146,23 +137,25 @@ export default function AddMemberDialog({
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setOpen(false)}
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={processing || filteredUsers.length === 0}
-                        >
-                            {processing ? 'Adding...' : 'Add Member'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={processing}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={processing || filteredUsers.length === 0}
+                        onClick={handleSubmit}
+                    >
+                        {processing ? 'Adding...' : 'Add Member'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

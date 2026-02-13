@@ -21,7 +21,7 @@ class TeamController extends Controller
             return Team::with(['creator:id,name', 'productManager:id,name', 'users:id,name,email,role_id'])
                 ->select('id', 'name', 'description', 'color', 'created_by', 'product_manager_id', 'created_at')
                 ->latest()
-                ->limit(500)
+                ->limit(100)
                 ->get()
                 ->each(function ($team) {
                     $team->loadCount('users');

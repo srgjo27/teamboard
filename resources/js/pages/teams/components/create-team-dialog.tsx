@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -17,36 +18,21 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { User } from '@/types/user';
-import { useForm, usePage } from '@inertiajs/react';
 import { IconPlus } from '@tabler/icons-react';
-import { FormEventHandler, useState } from 'react';
+import { useCreateTeam } from '../hooks/use-create-team';
 
 export default function CreateTeamDialog() {
-    const [open, setOpen] = useState(false);
-    const { allUsers } = usePage<{ allUsers: User[] }>().props;
-
-    const productManagers = allUsers.filter(
-        (user) => user.role?.name === 'product_manager',
-    );
-
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        description: '',
-        color: '#3B82F6',
-        product_manager_id: '',
-    });
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post('/teams', {
-            preserveScroll: true,
-            onSuccess: () => {
-                reset();
-                setOpen(false);
-            },
-        });
-    };
+    const {
+        open,
+        setOpen,
+        productManagers,
+        data,
+        setData,
+        processing,
+        errors,
+        handleSubmit,
+        handleClose,
+    } = useCreateTeam();
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -184,20 +170,25 @@ export default function CreateTeamDialog() {
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setOpen(false)}
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Creating...' : 'Create Team'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={processing}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        onClick={handleSubmit}
+                    >
+                        {processing ? 'Creating...' : 'Create Team'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
