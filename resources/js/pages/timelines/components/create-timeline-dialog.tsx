@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -490,20 +491,25 @@ export function CreateTimelineDialog({
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleClose}
-                            disabled={isSubmitting}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Creating...' : 'Create Timeline'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Creating...' : 'Create Timeline'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

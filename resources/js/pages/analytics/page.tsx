@@ -8,7 +8,6 @@ import { TeamPerformanceTable } from './components/team-performance-table';
 import { TeamWorkloadChart } from './components/team-workload-chart';
 import { TicketPriorityChart } from './components/ticket-priority-chart';
 import { TicketStatusChart } from './components/ticket-status-chart';
-import { TopAssigneesChart } from './components/top-assignees-chart';
 import { UserActivityTable } from './components/user-activity-table';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -65,14 +64,6 @@ export default function AnalyticsPage({ analytics }: AnalyticsPageProps) {
                             data={analytics.teams.completionRate}
                         />
                     </div>
-                </div>
-
-                {/* Assignees */}
-                <div>
-                    <h2 className="mb-4 text-lg font-semibold">
-                        Top Contributors
-                    </h2>
-                    <TopAssigneesChart data={analytics.tickets.byAssignee} />
                 </div>
 
                 {/* User Activity Section */}

@@ -58,6 +58,7 @@ export default function RemoveMemberDialog({
                         team?
                     </DialogDescription>
                 </DialogHeader>
+
                 <div className="rounded-lg bg-muted p-4">
                     <p className="text-sm">
                         <span className="font-medium">{userName}</span> will be
@@ -65,6 +66,7 @@ export default function RemoveMemberDialog({
                         team resources.
                     </p>
                 </div>
+                
                 <DialogFooter>
                     <Button
                         type="button"

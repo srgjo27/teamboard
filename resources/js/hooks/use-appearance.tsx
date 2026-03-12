@@ -6,22 +6,10 @@ export type Appearance = ResolvedAppearance | 'system';
 const listeners = new Set<() => void>();
 let currentAppearance: Appearance = 'light';
 
-const prefersDark = (): boolean => {
-    if (typeof window === 'undefined') return false;
-
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-};
-
 const setCookie = (name: string, value: string, days = 365): void => {
     if (typeof document === 'undefined') return;
     const maxAge = days * 24 * 60 * 60;
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
-};
-
-const getStoredAppearance = (): Appearance => {
-    if (typeof window === 'undefined') return 'light';
-
-    return 'light';
 };
 
 const isDarkMode = (appearance: Appearance): boolean => {
@@ -44,17 +32,6 @@ const subscribe = (callback: () => void) => {
 };
 
 const notify = (): void => listeners.forEach((listener) => listener());
-
-const mediaQuery = (): MediaQueryList | null => {
-    if (typeof window === 'undefined') return null;
-
-    return window.matchMedia('(prefers-color-scheme: dark)');
-};
-
-const handleSystemThemeChange = (): void => {
-    applyTheme(currentAppearance);
-    notify();
-};
 
 export function initializeTheme(): void {
     if (typeof window === 'undefined') return;
@@ -81,10 +58,8 @@ export function useAppearance() {
     const updateAppearance = useCallback((mode: Appearance): void => {
         currentAppearance = mode;
 
-        // Store in localStorage for client-side persistence...
         localStorage.setItem('appearance', mode);
 
-        // Store in cookie for SSR...
         setCookie('appearance', mode);
 
         applyTheme(mode);

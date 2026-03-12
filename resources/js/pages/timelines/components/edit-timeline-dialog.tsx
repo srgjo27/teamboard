@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -15,7 +16,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Project, Timeline } from '@/types/timeline';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
@@ -481,20 +481,25 @@ export function EditTimelineDialog({
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleClose}
-                            disabled={isSubmitting}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Updating...' : 'Update Timeline'}
-                        </Button>
-                    </div>
                 </form>
+
+                <DialogFooter>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Updating...' : 'Update Timeline'}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

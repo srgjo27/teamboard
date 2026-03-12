@@ -234,6 +234,7 @@ export function TeamCard({ team, allUsers, canActions }: TeamCardProps) {
                         />
                     )}
                 </div>
+                
             </CardContent>
         </Card>
     );

@@ -47,7 +47,6 @@ export const typeLabels: Record<string, string> = {
     event: 'Event',
 };
 
-
 export const timelineTypeInfo = [
     {
         type: 'Sprint',
