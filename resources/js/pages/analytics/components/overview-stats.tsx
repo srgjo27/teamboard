@@ -1,5 +1,5 @@
 import { OverviewStats } from '@/types/analytics';
-import { BarChart3, CheckCircle2, Clock, FolderKanban, Users, Ticket } from 'lucide-react';
+import { CheckCircle2, Clock, FolderKanban, Ticket, Users } from 'lucide-react';
 import { StatCard } from './stat-card';
 
 interface OverviewStatsProps {

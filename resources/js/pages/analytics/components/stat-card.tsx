@@ -26,10 +26,14 @@ export function StatCard({
                         <Icon className={`h-6 w-6 ${iconColor}`} />
                     </div>
                     <div className="flex-1">
-                        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            {title}
+                        </p>
                         <p className="text-2xl font-bold">{value}</p>
                         {subtitle && (
-                            <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                                {subtitle}
+                            </p>
                         )}
                     </div>
                 </div>

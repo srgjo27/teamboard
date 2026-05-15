@@ -1,9 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Briefcase,
-    FolderKanban,
-    TrendingUp,
-} from 'lucide-react';
+import { Briefcase, FolderKanban, TrendingUp } from 'lucide-react';
 
 interface ProjectStatsProps {
     totalProjects: number;

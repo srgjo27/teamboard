@@ -52,7 +52,7 @@ export default function TicketsPage({
                     <div className="flex flex-wrap items-center gap-2">
                         {/* Project Filter */}
                         <Select onValueChange={handleProjectChange}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-45">
                                 <SelectValue placeholder="Select project" />
                             </SelectTrigger>
                             <SelectContent>

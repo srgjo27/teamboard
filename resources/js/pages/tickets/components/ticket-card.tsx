@@ -1,3 +1,13 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,16 +19,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -27,7 +27,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { Ticket, Project, Timeline } from '@/types/ticket';
+import { Project, Ticket, Timeline } from '@/types/ticket';
 import {
     IconArrowRight,
     IconDotsVertical,
@@ -37,13 +37,13 @@ import {
     IconUserPlus,
 } from '@tabler/icons-react';
 import { TICKET_PRIORITIES } from '../constants/ticket-priorities';
-import { AssignQaDialog } from './assign-qa-dialog';
-import { TicketDetailDialog } from './ticket-detail-dialog';
-import { EditTicketDialog } from './edit-ticket-dialog';
-import { MoveStatusDialog } from './move-status-dialog';
-import { useTicketCardDialogs } from '../hooks/use-ticket-card-dialogs';
 import { useTeamQaFilter } from '../hooks/use-team-qa-filter';
 import { useTicketActions } from '../hooks/use-ticket-actions';
+import { useTicketCardDialogs } from '../hooks/use-ticket-card-dialogs';
+import { AssignQaDialog } from './assign-qa-dialog';
+import { EditTicketDialog } from './edit-ticket-dialog';
+import { MoveStatusDialog } from './move-status-dialog';
+import { TicketDetailDialog } from './ticket-detail-dialog';
 
 interface TicketCardProps {
     ticket: Ticket;
@@ -271,13 +271,17 @@ export function TicketCard({ ticket, projects, timelines }: TicketCardProps) {
             />
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+            <AlertDialog
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will permanently delete ticket <strong>{ticket.ticket_number}</strong> ({ticket.title}).
-                            This action cannot be undone.
+                            This will permanently delete ticket{' '}
+                            <strong>{ticket.ticket_number}</strong> (
+                            {ticket.title}). This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

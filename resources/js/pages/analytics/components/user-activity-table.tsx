@@ -78,7 +78,7 @@ export function UserActivityTable({ data }: UserActivityTableProps) {
                                             {rankBadge && RankIcon ? (
                                                 <div className="flex items-center justify-center">
                                                     <div
-                                                        className={`flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br ${rankBadge.gradient}`}
+                                                        className={`flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br ${rankBadge.gradient}`}
                                                     >
                                                         <RankIcon className="h-4 w-4 text-white" />
                                                     </div>
